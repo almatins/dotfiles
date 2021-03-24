@@ -17,7 +17,7 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 
 $ vim
 
-# :VimPlug
+:VimPlug
 ```
 
 I hope you will find this useful :)

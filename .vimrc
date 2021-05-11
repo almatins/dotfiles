@@ -8,18 +8,22 @@ set background=dark
 set title
 " display row number
 set number
+" show relative row number
 set relativenumber
+" highlight cursorline
 set cursorline
+" show line and column number
 set ruler
-set showtabline=2
-set clipboard=unnamedplus
 " indents
 set autoindent
 set smartindent
-set exrc
+" cursor
 set guicursor=
+" hide buffer
 set hidden
+" do not ring bell on error
 set noerrorbells
+" turn of visual bell
 set novisualbell
 " tab
 set tabstop=4 
@@ -28,7 +32,9 @@ set shiftwidth=4
 set expandtab
 set smarttab
 set nu
+" turn off wrap
 set nowrap
+" turn off fold
 set nofoldenable
 " cases
 set ignorecase
@@ -39,18 +45,30 @@ set noswapfile
 set nobackup
 set undodir=~/.vim/undodir
 set undofile
+" turn on incremental search
 set incsearch
+" term gui color
 set termguicolors
+" minimal number of screen lines to keep above cursor
 set scrolloff=8
+" turn off visual mode
 set noshowmode
 "set completeopt=menuone,noinsert,noselect
+" insert mode completion, insert only when user select
 set completeopt+=noinsert
+" add preview
 set completeopt-=preview
+" list all matches 
 set wildmode=list:longest
+" Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
+" draw the sign column
 set signcolumn=yes
+" enable mouse for all prev modes
 set mouse=a
-set vb t_vb=     " no visual be" & flas
+" no beep or flash message
+set vb t_vb= 
+" highlight search
 set hlsearch
 
 " Give more space for displaying messages.
@@ -60,121 +78,113 @@ set cmdheight=2
 " delays and poor user experience.
 set updatetime=50
 
-" Don't pass messages to |ins-completion-menu|.
-set shortmess+=c
-
+" color column 
 set colorcolumn=80
 
+" vimplug
 call plug#begin('~/.vim/plugged')
-" 
-" " A universal set of defaults that (hopefully) everyone can agree on
-" Plug 'tpope/vim-sensible'
-" 
-" === languages ===
-" language packs
-Plug 'sheerun/vim-polyglot'
-" typescript syntax file and other settings 
+
+" JavaScript bundle for vim, this bundle provides syntax highlighting and
+" improved indentation.
+Plug 'pangloss/vim-javascript'
+" typescript
 Plug 'leafgarland/typescript-vim'
-" dart language support
+" dart
 Plug 'dart-lang/dart-vim-plugin'
-" vim-javascript
-" Plug 'pangloss/vim-javascript'
-" 
-" === code completion ===
-" code completion 
+
+" completion
+" Make your Vim/Neovim as smart as VSCode.
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
-Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-" flutter code completion
-Plug 'iamcco/coc-flutter'
-" 
-" " === lint and formatting ===
-" " Async lint engine 
-" " Plug 'w0rp/ale'
-" wrapper for prettier 
-Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'branch': 'release/1.x' }
-" 
-" === files ===
-" fuzzy finder to find files
+" Vue language server extension for coc.nvim
+" Plug 'neoclide/coc-vetur'
+" eslint
+Plug 'neoclide/coc-eslint'
+
+" Vim syntax highlighting for Vue components.
+Plug 'posva/vim-vue'
+" flutter
+Plug 'thosakwe/vim-flutter'
+
+" prettier
+" A Vim plugin for Prettier
+Plug 'prettier/vim-prettier'
+
+" indent guide
+Plug 'nathanaelkane/vim-indent-guides'
+" auto paris
+Plug 'jiangmiao/auto-pairs'
+
+" file finder
+" A command-line fuzzy finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-" " Better file browser
-" Plug 'scrooloose/nerdtree'
-" " Adds icons to vim plugins
-" Plug 'ryanoasis/vim-devicons'
-" " continuously updated session files
-" Plug 'tpope/vim-obsession'
-" 
-" " theme and display
-" " theme
+
+" color scheme
+" Retro groove color scheme for Vim
 Plug 'morhetz/gruvbox'
-" status and tabline 
+
+" status bar
 Plug 'vim-airline/vim-airline'
-" battery status
-Plug 'lambdalisue/battery.vim'
-" 
-" " === Git ===
-" " Git wrapper
-" Plug 'tpope/vim-fugitive'
-" 
-" " === editing ===
-" insert and delete bracket, parens, quotes in pair 
-Plug 'jiangmiao/auto-pairs'
-" " Comment stuff out
-" Plug 'tpope/vim-commentary'
-" " quoting/parenthesis made simple
-Plug 'tpope/vim-surround'
-" Indent Guides is a plugin for visually displaying indent levels in Vim.
-Plug 'nathanaelkane/vim-indent-guides'
-" 
-" " === tasks todos ===
-" " Eclipse TaskList
-" Plug 'fisadev/FixedTaskList.vim'
-" " Distraction-free writing in Vim.
-" Plug 'junegunn/goyo.vim'
-" " A simple tool for presenting slides in vim based on text files.
-" Plug 'sotte/presenting.vim'
-" Vim plugin for .tmux.conf
-Plug 'tmux-plugins/vim-tmux'
-" 
+
 call plug#end()
 
+" disable startup message for coc
 let g:coc_disable_startup_warning = 1
+" prettier
 let g:prettier#autoformat = 1
+" indent guides
+" ============================================================================
+" INDENTGUIDE CONFIGURATION
+" ============================================================================
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_start_level           = 2
+let g:indent_guides_auto_colors           = 1
+let g:indent_guides_color_change_percent  = 20
+let g:indent_guides_space_guides          = 1
+let g:indent_guides_tab_guides            = 1
+let g:indent_guides_guide_size            = 1
+let g:indent_guides_exclude_filetypes     = ['help', 'nerdtree', 'startify', 'Preview','__doc__','rst']
+
+" color scheme
+colorscheme gruvbox
+let g:gruvbox_contrast_light = "hard"
+
+" airline
 let g:airline#extensions#battery#enabled = 1
-let g:ale_fix_on_save = 1
 
-inoremap <silent><expr> <TAB>
-            \ pumvisible() ? "\<C-n>" :
-            \ <SID>check_back_space() ? "\<TAB>" :
-            \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" prettier
+nnoremap <Leader>p :Prettier<CR>
+" fzf
+nnoremap <C-p> :Files<CR>
+" flutter
+nnoremap <leader>fa :FlutterRun<CR>
+nnoremap <leader>fq :FlutterQuit<CR>
+nnoremap <leader>fr :FlutterHotReload<CR>
+nnoremap <leader>fR :FlutterHotRestart<CR>
+nnoremap <leader>fD :FlutterVisualDebug<CR>
 
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+" goto code definition
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
-" Use <c-space> for trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
 
-" " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
-" " Coc only does snippet and additional edit on confirm.
-" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
- " coc-prettier
- command! -nargs=0 Prettier :CocCommand prettier.formatFile
-
+" cursor movements
+" ----------------
 " move to the end of line on insert mode
 inoremap <C-e> <C-o>$
+" cnext and cprev when vimgrep
+nnoremap <Leader>> :cnext<CR>
+nnoremap <Leader>< :cprev<CR>
 
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-nnoremap <C-p> :Files<CR>
+" buffers
+" close current buffer
 nnoremap <Leader>w :bd<CR>
+" show list of buffers
 nnoremap <Leader>l :Buffers<CR>
+" show history files edited
 nnoremap <Leader>h :History<CR>
-nnoremap <Leader>p :Prettier<CR>
 
 " disable change case
 xnoremap u <nop>
@@ -185,14 +195,6 @@ nnoremap gU <nop>
 " copy paste 
 nnoremap <C-c> "yy<CR>
 vnoremap <C-c> "yy
-
-colorscheme gruvbox
-
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
 
 " Disable arrow keys
 noremap <Up> <Nop>
@@ -210,104 +212,13 @@ imap <M-Right> <ESC>:tabn<CR>
 map <M-Left> :tabp<CR>
 imap <M-Left> <ESC>:tabp<CR>
 
-nnoremap <silent> [oh :call gruvbox#hls_show()<CR>
-nnoremap <silent> ]oh :call gruvbox#hls_hide()<CR>
-nnoremap <silent> coh :call gruvbox#hls_toggle()<CR>
+" map tab to escape
+nnoremap <Tab> <Esc>
+vnoremap <Tab> <Esc>gV
+onoremap <Tab> <Esc>
+cnoremap <Tab> <C-C><Esc>
+inoremap <Tab> <Esc>`^
+inoremap <Leader><Tab> <Tab>
 
-nnoremap * :let @/ = ""<CR>:call gruvbox#hls_show()<CR>*
-nnoremap / :let @/ = ""<CR>:call gruvbox#hls_show()<CR>/
-nnoremap ? :let @/ = ""<CR>:call gruvbox#hls_show()<CR>?
-
-" ============================================================================
-" NERDTREE
-" ============================================================================
-" nnoremap <leader>n :NERDTreeFocus<CR>
-" nnoremap <C-n> :NERDTree<CR>
-" nnoremap <C-t> :NERDTreeToggle<CR>
-" nnoremap <C-f> :NERDTreeFind<CR>
-
-" TASKLIST CONFIGURATION
-" ============================================================================
-" show pending tasks list
-" map <F2> :TaskList<CR>
-
-" ============================================================================
-" AUTOCLOSE ISORT CONFIGURATION
-" ============================================================================
-" Fix to let ESC work as espected with Autoclose plugin
-" (without this, when showing an autocompletion window, ESC won't leave insert
-"  mode)
-" let g:AutoClosePumvisible = {"ENTER": "\<C-Y>", "ESC": "\<ESC>"}
-
-" ============================================================================
-" VIM_DEV_ICONS CONFIGURATION
-" ============================================================================
-" loading the plugin
-" let g:webdevicons_enable = 1
-" " adding the flags to NERDTree
-" let g:webdevicons_enable_nerdtree = 1
-" " adding the custom source to unite
-" let g:webdevicons_enable_unite = 1
-" " adding the column to vimfiler
-" let g:webdevicons_enable_vimfiler = 1
-" " adding to vim-airline's tabline
-" let g:webdevicons_enable_airline_tabline = 1
-" " adding to vim-airline's statusline
-" let g:webdevicons_enable_airline_statusline = 1
-" " ctrlp glyphs
-" let g:webdevicons_enable_ctrlp = 1
-" " adding to vim-startify screen
-" let g:webdevicons_enable_startify = 1
-" " adding to flagship's statusline
-" let g:webdevicons_enable_flagship_statusline = 1
-" " turn on/off file node glyph decorations (not particularly useful)
-" let g:WebDevIconsUnicodeDecorateFileNodes = 1
-" " use double-width(1) or single-width(0) glyphs
-" " only manipulates padding, has no effect on terminal or set(guifont) font
-" let g:WebDevIconsUnicodeGlyphDoubleWidth = 1
-" " whether or not to show the nerdtree brackets around flags
-" let g:webdevicons_conceal_nerdtree_brackets = 1
-" " the amount of space to use after the glyph character (default ' ')
-" let g:WebDevIconsNerdTreeAfterGlyphPadding = '  '
-" " Force extra padding in NERDTree so that the filetype icons line up vertically
-" let g:WebDevIconsNerdTreeGitPluginForceVAlign = 1
-" " Adding the custom source to denite
-" let g:webdevicons_enable_denite = 1
-
-" ============================================================================
-" INDENTGUIDE CONFIGURATION
-" ============================================================================
-let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_start_level           = 1
-let g:indent_guides_auto_colors           = 1
-let g:indent_guides_color_change_percent  = 10
-let g:indent_guides_space_guides          = 1
-let g:indent_guides_tab_guides            = 1
-let g:indent_guides_guide_size            = 1
-let g:indent_guides_exclude_filetypes     = ['help', 'nerdtree', 'startify', 'Preview','__doc__','rst']
-
-fun! ColorMyPencils()
-    let g:gruvbox_contrast_dark = 'hard'
-    if exists('+termguicolors')
-        let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-        let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-    endif
-    let g:gruvbox_invert_selection='0'
-
-    colorscheme gruvbox
-
-    highlight ColorColumn ctermbg=0 guibg=grey
-    hi SignColumn guibg=none
-    hi CursorLineNR guibg=None
-    highlight Normal guibg=none
-    highlight LineNr guifg=#5eacd3
-    highlight netrwDir guifg=#5eacd3
-    highlight qfFileName guifg=#aed75f
-    hi TelescopeBorder guifg=#5eacd
-endfun
-call ColorMyPencils()
-nnoremap <leader>vwm :call ColorMyPencils()<CR>
-
-" gruvbox overrides
-let g:gruvbox_contrast_light = "hard"
-
+" completion on command
+set wc=<Esc>

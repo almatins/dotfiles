@@ -26,9 +26,9 @@ set noerrorbells
 " turn of visual bell
 set novisualbell
 " tab
-set tabstop=4 
-set softtabstop=4
-set shiftwidth=4
+set tabstop=2 
+set softtabstop=2
+set shiftwidth=2
 set expandtab
 set smarttab
 set nu
@@ -72,7 +72,7 @@ set vb t_vb=
 set hlsearch
 
 " Give more space for displaying messages.
-set cmdheight=2
+set cmdheight=4
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
@@ -87,10 +87,23 @@ call plug#begin('~/.vim/plugged')
 " JavaScript bundle for vim, this bundle provides syntax highlighting and
 " improved indentation.
 Plug 'pangloss/vim-javascript'
+
 " typescript
 Plug 'leafgarland/typescript-vim'
+Plug 'ianks/vim-tsx'
+Plug 'leafgarland/typescript-vim'
+
 " dart
 Plug 'dart-lang/dart-vim-plugin'
+
+" flutter
+" Plug 'iamcco/coc-flutter'
+Plug 'thosakwe/vim-flutter'
+Plug 'natebosch/vim-lsc'
+Plug 'natebosch/vim-lsc-dart'
+
+" Snippets
+Plug 'natebosch/dartlang-snippets'
 
 " completion
 " Make your Vim/Neovim as smart as VSCode.
@@ -118,6 +131,7 @@ Plug 'jiangmiao/auto-pairs'
 " A command-line fuzzy finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+Plug 'nvim-lua/plenary.nvim'
 
 " color scheme
 " Retro groove color scheme for Vim
@@ -126,12 +140,36 @@ Plug 'morhetz/gruvbox'
 " status bar
 Plug 'vim-airline/vim-airline'
 
+" git
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+
 call plug#end()
 
 " disable startup message for coc
 let g:coc_disable_startup_warning = 1
 " prettier
 let g:prettier#autoformat = 1
+let g:prettier#autoformat_require_pragma = 0
+
+"coc config
+let g:coc_global_extensions = [
+  \ 'coc-snippets',
+  \ 'coc-tsserver',
+  \ 'coc-eslint', 
+  \ 'coc-prettier', 
+  \ 'coc-json', 
+  \ 'coc-flutter',
+  \ 'coc-snippets',
+  \ 'coc-yaml',
+  \ 'coc-tslint-plugin',
+  \ 'coc-tsserver',
+  \ 'coc-emmet',
+  \ 'coc-css',
+  \ 'coc-html',
+  \ 'coc-json',
+  \ ]
+
 " indent guides
 " ============================================================================
 " INDENTGUIDE CONFIGURATION
@@ -169,6 +207,8 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
+" git
+nnoremap <leader>gdiff :Gvdiffsplit<CR>
 
 " cursor movements
 " ----------------
@@ -192,6 +232,9 @@ xnoremap U <nop>
 nnoremap gu <nop>
 nnoremap gU <nop>
 
+" -- ctrl + s for save, instead of freeze
+noremap <silent> <C-S> :update<CR>
+
 " copy paste 
 nnoremap <C-c> "yy<CR>
 vnoremap <C-c> "yy
@@ -213,12 +256,44 @@ map <M-Left> :tabp<CR>
 imap <M-Left> <ESC>:tabp<CR>
 
 " map tab to escape
-nnoremap <Tab> <Esc>
-vnoremap <Tab> <Esc>gV
-onoremap <Tab> <Esc>
-cnoremap <Tab> <C-C><Esc>
-inoremap <Tab> <Esc>`^
-inoremap <Leader><Tab> <Tab>
+" nnoremap <Tab> <Esc>
+" vnoremap <Tab> <Esc>gV
+" onoremap <Tab> <Esc>
+" cnoremap <Tab> <C-C><Esc>
+" inoremap <Tab> <Esc>`^
+" inoremap <Leader><Tab> <Tab>
 
 " completion on command
 set wc=<Esc>
+
+" cursor color
+highlight Cursor guifg=white guibg=black
+highlight iCursor guifg=white guibg=steelblue
+
+"flutter
+nnoremap <leader>fe :CocCommand flutter.emulators <CR>
+nnoremap <leader>fd :below new output:///flutter-dev <CR>
+
+"dart
+let g:dart_format_on_save = 1
+let g:dartfmt_options = ['--fix', '--line-length 120']
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+

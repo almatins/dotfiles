@@ -209,6 +209,8 @@ nmap <silent> gr <Plug>(coc-references)
 
 " git
 nnoremap <leader>gdiff :Gvdiffsplit<CR>
+nnoremap <leader>ga :G add .<CR>
+nnoremap <leader>gc :G commit<CR>
 
 " cursor movements
 " ----------------
@@ -267,8 +269,8 @@ imap <M-Left> <ESC>:tabp<CR>
 set wc=<Esc>
 
 " cursor color
-highlight Cursor guifg=white guibg=black
-highlight iCursor guifg=white guibg=steelblue
+highlight cursor guifg=white guibg=black
+highlight icursor guifg=white guibg=steelblue
 
 "flutter
 nnoremap <leader>fe :CocCommand flutter.emulators <CR>

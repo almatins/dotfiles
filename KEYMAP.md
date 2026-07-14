@@ -255,17 +255,38 @@ tests via **neotest-go**. Imports are fixed on save; `<leader>co` forces it.
 
 ### Kotlin — `lang.kotlin`
 
-Server **kotlin_language_server**, linting via **ktlint**. Java is on your PATH, which
-the server needs.
+> **The language server does not run on this machine yet.** Fedora ships OpenJDK 25,
+> and kotlin-language-server bundles a Kotlin compiler whose IntelliJ version parser
+> throws `IllegalArgumentException: 25.0.3` — it cannot parse a Java major version that
+> high, and dies with exit code 1 the moment a `.kt` buffer opens.
+>
+> `lua/plugins/kotlin.lua` therefore refuses to start it (a server that crashes on every
+> buffer is worse than none — the error notification fires every time). Syntax
+> highlighting, `gcc`, formatting via ktlint and everything non-LSP still work.
+>
+> To turn it on:
+>
+> ```sh
+> sudo dnf install java-21-openjdk-devel
+> ```
+>
+> The config finds the JDK automatically and starts the server from the next launch.
+> Nothing to edit.
 
-Set expectations: the Kotlin language server is much weaker than the TypeScript or Go
-ones. Completion and go-to-definition work; deep Android/Gradle integration does not.
-For Android-specific work, Android Studio remains the better tool — Neovim is good for
-editing Kotlin, not for driving the Android build.
+Once running, set expectations: the Kotlin language server is much weaker than the
+TypeScript or Go ones. Completion and go-to-definition work; deep Android/Gradle
+integration does not. For Android work, Android Studio remains the better tool —
+Neovim is good for editing Kotlin, not for driving the Android build.
 
 ### Python — `lang.python`
 
 Server **basedpyright**, linting and formatting via **ruff**.
+
+> LazyVim's Python extra defaults to plain `pyright`, not basedpyright
+> (`vim.g.lazyvim_python_lsp or "pyright"`). `lua/config/options.lua` opts in
+> explicitly. Without that line pyright is never installed, so **only ruff attaches and
+> you silently get no type checking at all** — the failure is invisible, because a
+> linter is still reporting problems.
 
 | Key | Action |
 | --- | --- |
@@ -275,37 +296,35 @@ Server **basedpyright**, linting and formatting via **ruff**.
 
 ---
 
-## 7. Toolchain
+## 7. Toolchain — verified state
 
-Present: `git`, `rg`, `gcc`, `node`, `npm`, `go`, `dart`, `flutter`, `java`, `python3`.
+JetBrainsMono Nerd Font is installed and Ptyxis is pointed at it. All 19 Mason packages
+are installed: vtsls, gopls, basedpyright, ruff, kotlin-language-server, json-lsp,
+yaml-language-server, dockerfile-language-server, lua-language-server, prettier, gofumpt,
+goimports, golangci-lint, delve, ktlint, hadolint, sqlfluff, markdownlint-cli2,
+markdown-toc.
 
-Needed:
+Verified attaching to real buffers:
 
-```sh
-sudo dnf install fd-find fzf lazygit
-```
+| Language | LSP | Treesitter |
+| --- | --- | --- |
+| TypeScript | `vtsls` | ok |
+| JavaScript | `vtsls` | ok |
+| Go | `gopls` | ok |
+| Python | `basedpyright` + `ruff` | ok |
+| Dart | `dartls` (one client — no flutter-tools/lspconfig duplicate) | ok |
+| Kotlin | **suppressed** — needs a JDK ≤ 21, see §6 | ok |
 
-- **fd** — what the picker uses to walk files; without it, finding is slower.
-- **fzf** — used by some pickers and by `lazygit`.
-- **lazygit** — optional, but LazyVim's git integration is built around it.
+### Still outstanding
 
-**A Nerd Font is not optional.** LazyVim's UI is icon-driven; without one, every icon
-renders as a tofu box and the editor looks broken:
-
-```sh
-mkdir -p ~/.local/share/fonts
-cd ~/.local/share/fonts
-curl -fLO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
-unzip -o JetBrainsMono.zip && rm JetBrainsMono.zip
-fc-cache -f
-```
-
-Then point Ptyxis at it:
+Two commands, both needing your password:
 
 ```sh
-gsettings set org.gnome.Ptyxis use-system-font false
-gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 11'
+sudo dnf install -y fd-find fzf lazygit   # picker speed, lazygit integration
+sudo dnf install -y java-21-openjdk-devel # turns the Kotlin LSP on
 ```
 
-Language servers install themselves via Mason on first file open. If one does not,
-`<leader>cl` shows what attached and `<leader>cm` opens Mason.
+Neither blocks anything else — the picker falls back to ripgrep, and Kotlin still has
+highlighting and formatting without its LSP.
+
+`<leader>cl` shows what attached to the current buffer; `<leader>cm` opens Mason.

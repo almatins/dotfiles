@@ -255,25 +255,22 @@ tests via **neotest-go**. Imports are fixed on save; `<leader>co` forces it.
 
 ### Kotlin — `lang.kotlin`
 
-> **The language server does not run on this machine yet.** Fedora ships OpenJDK 25,
-> and kotlin-language-server bundles a Kotlin compiler whose IntelliJ version parser
-> throws `IllegalArgumentException: 25.0.3` — it cannot parse a Java major version that
-> high, and dies with exit code 1 the moment a `.kt` buffer opens.
+> **Why this needs a special JDK.** kotlin-language-server bundles a Kotlin compiler
+> whose IntelliJ version parser throws `IllegalArgumentException: 25.0.3` — it cannot
+> parse a Java major version that high — so it dies with exit code 1 on any `.kt`
+> buffer. Fedora 44 ships OpenJDK 25 and **packages nothing older**:
+> `dnf install java-21-openjdk-devel` fails with "No match for argument".
 >
-> `lua/plugins/kotlin.lua` therefore refuses to start it (a server that crashes on every
-> buffer is worse than none — the error notification fires every time). Syntax
-> highlighting, `gcc`, formatting via ktlint and everything non-LSP still work.
+> The way out was already on the machine: **Android Studio bundles JetBrains Runtime 21
+> at `/opt/android-studio/jbr`**, which is the JDK Flutter itself uses (`flutter doctor
+> -v` names it). `lua/plugins/kotlin.lua` points the server at it via `cmd_env`.
+> Verified working.
 >
-> To turn it on:
->
-> ```sh
-> sudo dnf install java-21-openjdk-devel
-> ```
->
-> The config finds the JDK automatically and starts the server from the next launch.
-> Nothing to edit.
+> If Android Studio ever moves, drop any JDK 17–21 into `~/.local/jdk` and the config
+> finds it. If no compatible JDK exists at all it declines to start the server rather
+> than letting it crash on every buffer.
 
-Once running, set expectations: the Kotlin language server is much weaker than the
+Set expectations: the Kotlin language server is much weaker than the
 TypeScript or Go ones. Completion and go-to-definition work; deep Android/Gradle
 integration does not. For Android work, Android Studio remains the better tool —
 Neovim is good for editing Kotlin, not for driving the Android build.
@@ -313,18 +310,15 @@ Verified attaching to real buffers:
 | Go | `gopls` | ok |
 | Python | `basedpyright` + `ruff` | ok |
 | Dart | `dartls` (one client — no flutter-tools/lspconfig duplicate) | ok |
-| Kotlin | **suppressed** — needs a JDK ≤ 21, see §6 | ok |
+| Kotlin | `kotlin_language_server` (under Android Studio's JBR 21) | ok |
 
-### Still outstanding
+Supporting tools: `fd`, `fzf`, `ripgrep`, `lazygit`, `git`, `gcc`.
 
-Two commands, both needing your password:
+Two of these are **not** from Fedora's repos, because Fedora does not package them:
 
-```sh
-sudo dnf install -y fd-find fzf lazygit   # picker speed, lazygit integration
-sudo dnf install -y java-21-openjdk-devel # turns the Kotlin LSP on
-```
-
-Neither blocks anything else — the picker falls back to ripgrep, and Kotlin still has
-highlighting and formatting without its LSP.
+- **lazygit** — upstream release binary in `~/.local/bin/lazygit`. Update by re-running
+  the download; `dnf` will never see it.
+- **JDK 21** — not installed separately at all. Reuses Android Studio's bundled JBR at
+  `/opt/android-studio/jbr` (see §6). Nothing to maintain.
 
 `<leader>cl` shows what attached to the current buffer; `<leader>cm` opens Mason.

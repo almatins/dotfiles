@@ -4,24 +4,34 @@
 --     Exception in thread "main" java.lang.IllegalArgumentException: 25.0.3
 --         at com.intellij.util.lang.JavaVersion.parse(JavaVersion.java:307)
 --
--- Fedora ships OpenJDK 25 and nothing older, so the server dies with exit code 1 the
--- instant a .kt buffer opens. It is not misconfigured — it is incompatible.
+-- Fedora 44 ships OpenJDK 25 and packages NOTHING older — `dnf install
+-- java-21-openjdk-devel` fails with "No match for argument". So the server dies with
+-- exit code 1 the instant a .kt buffer opens. It is not misconfigured; it is
+-- incompatible with the only JDK in the distro's repos.
 --
--- Fix: run it under a JDK it can actually parse. Install one with
+-- The way out is the JDK that is already here: Android Studio bundles JetBrains Runtime
+-- 21 at /opt/android-studio/jbr, and Flutter already uses it as its Java toolchain
+-- (`flutter doctor -v` names it). Verified: the Kotlin server starts cleanly under it.
 --
---     sudo dnf install java-21-openjdk-devel
---
--- and this file finds it automatically. Until then the server is left unstarted: a
--- server that crashes on every buffer is worse than no server, because the failure
--- notification fires every single time you open a file.
+-- If Android Studio ever moves or goes away, drop any JDK 17–21 into ~/.local/jdk and
+-- this picks it up. If none is found the server is left unstarted rather than started
+-- to crash — a server that dies on every buffer is worse than no server, because the
+-- failure notification then fires every single time you open a file.
 
----@return string|nil path to a JDK the Kotlin language server can run under
+---@return string|nil path to a JDK the Kotlin language server can actually run under
 local function usable_jdk()
-  -- Matched by name rather than by running `java -version` on each candidate: this
-  -- runs at startup, and shelling out to every JVM on the box to ask its version
-  -- would put subprocesses on the critical path of every launch.
-  for _, pattern in ipairs({ "java-21-openjdk*", "java-17-openjdk*" }) do
-    for _, dir in ipairs(vim.fn.glob("/usr/lib/jvm/" .. pattern, false, true)) do
+  local candidates = {
+    "/opt/android-studio/jbr", -- what Flutter already uses; JBR 21
+    vim.fn.expand("~") .. "/.local/jdk/jdk-21*",
+    vim.fn.expand("~") .. "/.local/jdk/jdk-17*",
+    "/usr/lib/jvm/java-21-openjdk*",
+    "/usr/lib/jvm/java-17-openjdk*",
+  }
+  -- Matched by path rather than by running `java -version` on each candidate: this runs
+  -- at startup, and shelling out to every JVM on the box would put subprocesses on the
+  -- critical path of every launch.
+  for _, pattern in ipairs(candidates) do
+    for _, dir in ipairs(vim.fn.glob(pattern, false, true)) do
       if vim.fn.executable(dir .. "/bin/java") == 1 then
         return dir
       end

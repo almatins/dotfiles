@@ -24,6 +24,14 @@ if [ -d ~/.bashrc.d ]; then
 fi
 unset rc
 
+# Disable XON/XOFF flow control. Without this, C-s freezes the terminal instead of
+# reaching the program: Neovim 0.11+ binds C-s to LSP signature help in insert mode,
+# and the freeze looks exactly like a hang. C-q would unfreeze it, but nobody
+# remembers that. Guarded to interactive shells, since stty needs a tty.
+case $- in
+    *i*) stty -ixon ;;
+esac
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

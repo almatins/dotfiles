@@ -1,0 +1,7 @@
+# Neovim runtime state — plugins, compiled bytecode, session data.
+# These are machine-local and regenerated on demand; only config belongs in git.
+nvim/.config/nvim/plugin/
+nvim/.config/nvim/spell/
+
+# install.sh's safety copies
+*.backup-*

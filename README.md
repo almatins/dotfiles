@@ -9,9 +9,17 @@ ever `dnf install stow` you can use `stow tmux nvim` instead of `install.sh` wit
 changes to this repo.
 
 ```
+bash/.bashrc             ->  ~/.bashrc
 tmux/.tmux.conf          ->  ~/.tmux.conf
 nvim/.config/nvim/       ->  ~/.config/nvim
 ```
+
+`~/.bash_profile` is not tracked: it is unmodified Fedora boilerplate whose only job
+is to source `~/.bashrc`, which *is* tracked.
+
+No credentials belong in this repo. `.bashrc` was scanned before it was committed and
+`~/.bashrc.d/` does not exist, so nothing else is sourced into the shell. Re-check
+before adding any new file here, especially if this repo ever gains a remote.
 
 ## Install
 

@@ -24,8 +24,11 @@ link() {
   echo "linked   $dest -> $src"
 }
 
+link "bash/.bashrc"         ".bashrc"
 link "tmux/.tmux.conf"      ".tmux.conf"
 link "nvim/.config/nvim"    ".config/nvim"
 
 echo
-echo "Done. Reload tmux with:  tmux source-file ~/.tmux.conf"
+echo "Done."
+echo "  Reload tmux with:   tmux source-file ~/.tmux.conf"
+echo "  Reload bash with:   exec bash"

@@ -74,6 +74,14 @@ MiniIcons.mock_nvim_web_devicons()
 local fzf = require("fzf-lua")
 fzf.setup({
   files = { formatter = "path.filename_first" },
+  -- The default selected-row colour (CursorLine) is a near-invisible grey on this
+  -- theme, so it looked as if the picker never moved. `true` keeps the auto-generated
+  -- theme for everything else; only the selected row is overridden.
+  fzf_colors = {
+    true,
+    ["bg+"] = { "bg", "Visual" },
+    ["fg+"] = { "fg", "Normal", "bold" },
+  },
 })
 fzf.register_ui_select()
 

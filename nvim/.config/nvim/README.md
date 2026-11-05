@@ -1,7 +1,7 @@
 # Neovim config — built on 0.12
 
 Neovim's own plugin manager (`vim.pack`), built-in LSP and tree-sitter. No lazy.nvim,
-no Mason. **12 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
+no Mason. **13 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
 only where a plugin ships no entry point.
 
 ```
@@ -30,6 +30,7 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | catppuccin (mocha) | colourscheme; auto-themes fzf-lua, blink, render-markdown, tree-sitter and LSP tokens |
 | gitsigns.nvim | gutter signs, hunk stage/reset/preview, blame, diff (`lua/git.lua`) |
 | lualine.nvim | one global statusline: mode, branch, git diff, diagnostics, file, LSP servers, filetype, `wrap` flag (`lua/statusline.lua`) |
+| which-key.nvim | popup listing the keys that can follow `<leader>`, `g`, `z`, `[`, `]`, `<C-w>`; reads each keymap's `desc` (`lua/whichkey.lua`) |
 | mini.icons | icons for the above, no devicons dependency |
 
 ## Keys (Space is leader)
@@ -44,6 +45,7 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | `<leader>e` `<leader>E` | oil: current file's dir / cwd (`g?` inside oil for its keys) |
 | `<leader>cf` | format |
 | `<leader>mp` / `<leader>mt` | markdown preview in glow / toggle in-buffer render |
+| `<leader>?` | keymaps of the current buffer only (which-key) |
 | `<leader>uw` | toggle word wrap (off by default) |
 | `<leader>gg` | lazygit in a floating terminal |
 | `<leader>gs` `gc` `gl` `gb` `gS` | git pickers: status, commits, this file's log, branches, stash |

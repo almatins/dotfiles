@@ -29,6 +29,9 @@ vim.pack.add({
   { src = "https://github.com/nvim-mini/mini.icons" },
   { src = "https://github.com/nvim-lualine/lualine.nvim" },
   { src = "https://github.com/folke/which-key.nvim" },
+  { src = "https://github.com/windwp/nvim-autopairs" },
+  { src = "https://github.com/kylechui/nvim-surround" },
+  { src = "https://github.com/folke/persistence.nvim" },
   { src = "https://github.com/ibhagwan/fzf-lua" },
   { src = "https://github.com/stevearc/oil.nvim" },
   -- 1.x tags ship a prebuilt Rust fuzzy matcher, so no Rust toolchain is needed.

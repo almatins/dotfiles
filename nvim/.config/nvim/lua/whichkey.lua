@@ -19,6 +19,7 @@ wk.add({
   { "<leader>h", group = "hunks", mode = { "n", "x" } },
   { "<leader>a", group = "ai agents", mode = { "n", "x" } },
   { "<leader>m", group = "markdown" },
+  { "<leader>q", group = "session" },
   { "<leader>c", group = "code" },
   { "<leader>t", group = "toggle" },
   { "<leader>u", group = "ui" },

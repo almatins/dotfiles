@@ -1,7 +1,7 @@
 # Neovim config — built on 0.12
 
 Neovim's own plugin manager (`vim.pack`), built-in LSP and tree-sitter. No lazy.nvim,
-no Mason. **13 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
+no Mason. **16 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
 only where a plugin ships no entry point.
 
 ```
@@ -31,6 +31,9 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | gitsigns.nvim | gutter signs, hunk stage/reset/preview, blame, diff (`lua/git.lua`) |
 | lualine.nvim | one global statusline: mode, branch, git diff, diagnostics, file, LSP servers, filetype, `wrap` flag (`lua/statusline.lua`) |
 | which-key.nvim | popup listing the keys that can follow `<leader>`, `g`, `z`, `[`, `]`, `<C-w>`; reads each keymap's `desc` (`lua/whichkey.lua`) |
+| nvim-autopairs | closes `( [ { " ' \`` automatically, tree-sitter aware (`lua/editing.lua`) |
+| nvim-surround | add / delete / change surrounding pairs: `ys` `ds` `cs` `S` |
+| persistence.nvim | one session per directory + branch, saved on exit, restored on demand |
 | mini.icons | icons for the above, no devicons dependency |
 
 ## Keys (Space is leader)
@@ -46,6 +49,8 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | `<leader>cf` | format |
 | `<leader>mp` / `<leader>mt` | markdown preview in glow / toggle in-buffer render |
 | `<leader>?` | keymaps of the current buffer only (which-key) |
+| `<leader>qs` `qS` `ql` `qd` | session: restore this dir / pick one / restore last / don't save this one |
+| `ysiw"` `ds"` `cs"'` `S"` (visual) | surround: add / delete / change / wrap selection |
 | `<leader>uw` | toggle word wrap (off by default) |
 | `<leader>gg` | lazygit in a floating terminal |
 | `<leader>gs` `gc` `gl` `gb` `gS` | git pickers: status, commits, this file's log, branches, stash |
@@ -100,3 +105,12 @@ Nothing installs them. `lua/lsp.lua` enables a server only when its binary is on
 
 A missing formatter is skipped silently. A project's `.editorconfig` and its own
 prettier/ruff/ktlint config override these defaults.
+
+## Built in, no plugin
+
+| Need | How |
+| --- | --- |
+| Comment | `gcc`, `gc{motion}`, `gc` in visual mode |
+| Symbol outline | `gO` (location list); `<leader>ss` is the fuzzy version |
+| Undo tree | `:packadd nvim.undotree` then `:Undotree` |
+| Diff two files / dirs | `:packadd nvim.difftool` then `:DiffTool a b` |

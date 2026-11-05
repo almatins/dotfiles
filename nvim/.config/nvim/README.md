@@ -55,8 +55,7 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | `ih` (operator / visual) | hunk text object, e.g. `vih` |
 | `<leader>aa` `as` `ad` `at` `af` `av` `ap` | sidekick: toggle, select, detach, send this/file/selection, prompt |
 | `<leader>ac` `ax` `ao` `ai` `ak` | sidekick: claude, codex, opencode, pi, kiro |
-| `<C-s>` | save |
-| `+` `-` | increment / decrement (tmux eats `<C-a>`) |
+| `<C-s>` | save (normal and visual mode; insert-mode `<C-s>` stays Neovim's signature help) |
 
 LSP keys are Neovim 0.11+ built-ins (`K gd gr gI gy gra grn gO ]d [d`). Completion keys
 are blink's default preset (`<C-space> <C-n> <C-p> <C-y> <C-e> <C-k>`).

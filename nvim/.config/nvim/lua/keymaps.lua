@@ -11,13 +11,11 @@
 
 local map = vim.keymap.set
 
--- tmux consumes <C-a> before Neovim sees it, so Vim's increment is unreachable there.
--- It moves to +/-. Inside an oil buffer, oil's own buffer-local `-` (go to parent) wins.
-map({ "n", "v" }, "+", "<C-a>", { desc = "Increment number" })
-map({ "n", "v" }, "-", "<C-x>", { desc = "Decrement number" })
-
-map({ "n", "i", "v" }, "<C-s>", "<cmd>write<cr>", { desc = "Save file" })
-map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
+-- Normal and visual mode only: insert-mode <C-s> is Neovim's built-in signature help,
+-- and <C-l> (built in) already clears search highlight. Vim's `+` and `-` are untouched.
+-- Caveat: tmux uses <C-a> as its prefix, so Vim's number increment (<C-a>) does not
+-- reach Neovim inside tmux.
+map({ "n", "v" }, "<C-s>", "<cmd>write<cr>", { desc = "Save file" })
 
 -- Windows ---------------------------------------------------------------------
 map("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Split right" })

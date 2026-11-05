@@ -53,9 +53,43 @@ return {
           "<cmd>Trouble todo toggle filter = {tag = {TODO,FIX,FIXME}}<cr>",
           desc = "Todo/Fix/Fixme (Trouble)",
         },
-        { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
-        { "<leader>sT", "<cmd>TodoTelescope keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme" },
+        -- Snacks is the picker here; TodoTelescope needs Telescope, which is not
+        -- installed, so the stock command fails with E492.
+        {
+          "<leader>st",
+          function()
+            Snacks.picker.todo_comments()
+          end,
+          desc = "Todo",
+        },
+        {
+          "<leader>sT",
+          function()
+            Snacks.picker.todo_comments({ keywords = { "TODO", "FIX", "FIXME" } })
+          end,
+          desc = "Todo/Fix/Fixme",
+        },
       }
+    end,
+  },
+
+  -- `extras.formatting.prettier` inserts "prettier" into every language's list,
+  -- including the markdown list that `extras.lang.markdown` already populated, so
+  -- a markdown save ran prettier twice. Dedupe once, after all extras have merged.
+  {
+    "stevearc/conform.nvim",
+    opts = function(_, opts)
+      opts.formatters_by_ft = opts.formatters_by_ft or {}
+      for ft, list in pairs(opts.formatters_by_ft) do
+        local seen, unique = {}, {}
+        for _, name in ipairs(list) do
+          if not seen[name] then
+            seen[name] = true
+            unique[#unique + 1] = name
+          end
+        end
+        opts.formatters_by_ft[ft] = unique
+      end
     end,
   },
 }

@@ -1,10 +1,10 @@
-# Keymap — tmux + LazyVim
+# Keymap — tmux + Neovim
 
 Daily-driver reference for Node.js, Flutter, Go, Kotlin and Python.
 
-Every key below was verified against LazyVim's source, not written from memory. If a
-mapping ever disagrees with reality, LazyVim is right and this file is stale — press
-`<leader>` and wait, or `<leader>sk`, to see the live truth.
+Every key below is defined in `nvim/.config/nvim/lua/keymaps.lua` or is a Neovim
+built-in. If a mapping ever disagrees with reality, press `<leader>` and wait
+(`mini.clue`), or `<leader>sk` to grep every mapping — those are the live truth.
 
 ---
 
@@ -22,7 +22,7 @@ distinct modifier so they never collide:
 
 **tmux's root key-table is empty.** It intercepts exactly one key system-wide: `C-a`.
 Every other keystroke reaches the program in the pane untouched. That is why `C-l`
-still clears the screen in bash, `C-k` still kills a line, and LazyVim keeps all of
+still clears the screen in bash, `C-k` still kills a line, and Neovim keeps all of
 `C-h/j/k/l` for window navigation.
 
 `Space` is a safe leader precisely because tmux never sees it.
@@ -51,8 +51,7 @@ panes; Neovim acts on windows and buffers.
 | Zoom | `C-a z` | `<leader>z` |
 | Find | `C-a f` (sessions) | `<leader>ff` (files) |
 
-`|`, `-` and `z` are LazyVim defaults already. `<leader>x` and `<leader>ff` are the two
-places we deviate from stock — see §4.
+All five are explicit in `lua/keymaps.lua` — nothing here is inherited from a distro.
 
 ---
 
@@ -80,35 +79,29 @@ repeatable, where that actually helps.
 
 ---
 
-## 4. Our deviations from stock LazyVim
+## 4. Deviations from stock Neovim
 
-Four changes, and no more. Every extra override is a thing that breaks on upgrade.
+Five changes, and no more. Everything else is a stock Neovim 0.11+ binding, because
+every override is a thing that can break on upgrade.
 
 | Key | Action | Why |
 | --- | --- | --- |
 | `+` / `-` | increment / decrement number | `<C-a>` belongs to tmux and never arrives. `<C-x>` follows it to `-` for symmetry. |
 | `g+` / `g-` (visual) | increment / decrement as a sequence | replaces `g<C-a>` / `g<C-x>` |
-| `<leader>x` | close buffer | mirrors `C-a x`. Stock LazyVim uses this as its Trouble group. |
-| `<leader>X…` | Trouble / diagnostics list | moved aside to free `<leader>x` |
+| `<leader>x` | close buffer | mirrors `C-a x`. Keeps the window layout intact (mini.bufremove). |
+| `<leader>X…` | diagnostics / quickfix lists | `<leader>x` needed to mean "close" |
+| `gK` / `C-k` | signature help | 0.11 puts it on `<C-s>` in insert mode; `<C-s>` is save here |
 
 Consequences to remember:
 
-- **Do not enable the `dial.nvim` extra.** It binds `<C-a>`/`<C-x>`, which tmux eats.
-- Trouble moves: `<leader>Xx` diagnostics, `<leader>Xq` quickfix, `<leader>Xt` todos.
-  Diagnostics are also on `<leader>sd` (picker) and `<leader>cd` (current line), so
-  little is lost.
-- `<leader>ff` rather than `<leader>f` for find-files — `<leader>f` is LazyVim's file
-  group and is too useful to overwrite. "f = find" still holds.
-
-`<C-s>` saves the file in LazyVim. That only works because `~/.bashrc` runs
-`stty -ixon`; with flow control on, `C-s` freezes the terminal instead.
+- **No dial.nvim.** It binds `<C-a>`/`<C-x>`, which tmux eats.
+- `<leader>Xx` is the diagnostics list (loclist), `<leader>Xq` the quickfix list.
+- `<C-s>` saves the file. That only works because `~/.bashrc` runs `stty -ixon`; with
+  flow control on, `C-s` freezes the terminal.
 
 ---
 
-## 5. LazyVim — the daily 40
-
-Enough to work all day. Press `<leader>` and pause for the rest; `<leader>sk` searches
-every mapping.
+## 5. The daily keys
 
 ### Moving around
 
@@ -116,30 +109,34 @@ every mapping.
 | --- | --- |
 | `<C-h/j/k/l>` | move between **Neovim windows** (`C-a h/j/k/l` for **tmux panes**) |
 | `<S-h>` / `<S-l>` | previous / next buffer (also `[b` / `]b`) |
-| `s` / `S` | Flash jump / Flash Treesitter jump |
-| `<C-i>` / `<C-o>` | jumplist forward / back — **never bind `<Tab>`, it is the same byte as `<C-i>`** |
+| `<leader>bb` | alternate buffer |
 | `<leader>,` | buffer picker |
-| `` <leader>` `` | switch to the other buffer |
+| `<C-i>` / `<C-o>` | jumplist forward / back — **never bind `<Tab>`, it is the same byte as `<C-i>`** |
+| `<A-j>` / `<A-k>` | move line or selection up / down (mini.move) |
 
 ### Finding
 
 | Key | Action |
 | --- | --- |
-| `<leader><space>` | find files (project root) |
-| `<leader>ff` | find files (project root) |
+| `<leader><space>` | find files |
+| `<leader>ff` | find files |
 | `<leader>fr` | recent files |
 | `<leader>fg` | find git-tracked files |
-| `<leader>/` | live grep (project root) |
+| `<leader>/` | live grep |
+| `<leader>sg` | live grep |
 | `<leader>sw` | grep the word under the cursor |
-| `<leader>sg` | grep (project root) |
-| `<leader>sr` | search and replace across the project (grug-far) |
+| `<leader>sd` | diagnostics picker |
 | `<leader>ss` | LSP symbols in this file |
 | `<leader>sS` | LSP symbols across the workspace |
 | `<leader>sk` | search all keymaps |
 | `<leader>sh` | search help |
-| `<leader>e` | file explorer |
+| `<leader>e` | file explorer (mini.files) |
+| `<leader>E` | reveal current file in the explorer |
 
-### Code — the same six keys in every language
+Pickers run from the **current working directory**, not a per-project root: start
+Neovim in the repo you mean to search. `fd` and `rg` are used when present.
+
+### Code — the same keys in every language
 
 | Key | Action |
 | --- | --- |
@@ -147,32 +144,35 @@ every mapping.
 | `gr` | references |
 | `gI` | go to implementation |
 | `gy` | go to type definition |
+| `gD` | go to declaration |
 | `K` | hover docs |
-| `gK` | signature help (`<C-k>` in insert mode) |
+| `gK` / `<C-k>` | signature help (normal / insert) |
 | `<leader>ca` | code action |
 | `<leader>cr` | rename symbol |
-| `<leader>cR` | rename file (and fix imports) |
-| `<leader>cf` | format buffer |
 | `<leader>co` | organize imports |
+| `<leader>cf` | format buffer (format-on-save is on by default) |
 | `<leader>cd` | diagnostics for this line |
-| `<leader>cl` | LSP info — *what is attached to this buffer?* |
-| `<leader>cm` | Mason — install/inspect language servers |
+| `<leader>cl` | LSP info — *what is attached to this buffer?* (`:checkhealth lsp`) |
 | `]d` / `[d` | next / previous diagnostic |
-| `]e` / `[e` | next / previous **error** |
-| `<leader>Xx` | full diagnostics list (Trouble — moved, see §4) |
+| `]h` / `[h` | next / previous git hunk |
+| `<leader>Xx` | full diagnostics list |
 | `gcc` / `gc` | comment line / comment motion |
-| `<A-j>` / `<A-k>` | move line or selection up / down |
+
+There is no `<leader>cm` any more: Mason is gone. Servers are ordinary binaries on
+`PATH` (see §6).
 
 ### Git
 
 | Key | Action |
 | --- | --- |
-| `<leader>gs` | git status |
+| `<leader>gs` | stage hunk |
+| `<leader>gr` | reset hunk |
+| `<leader>gp` | preview hunk |
 | `<leader>gb` | blame current line |
-| `<leader>gd` | diff hunks |
-| `<leader>gl` | git log |
-| `<leader>gf` | history of the current file |
-| `<leader>gB` | open this line on GitHub |
+| `<leader>gd` | diff this file |
+| `]h` / `[h` | next / previous hunk |
+
+There is no git-status/log UI plugin. `lazygit` is installed — run it in a tmux pane.
 
 ### Session and housekeeping
 
@@ -184,141 +184,114 @@ every mapping.
 | `<leader>z` | zoom window |
 | `<leader>wd` | close window |
 | `<leader>qq` | quit all |
-| `<leader>qs` | restore last session |
-| `<leader>l` | Lazy — plugin manager |
-| `<leader>uf` | toggle format-on-save |
+| `<leader>e` | file explorer |
 | `<Esc>` | clear search highlight |
+| `:mksession` | save a session (no persistence plugin) |
 
 ---
 
 ## 6. Per-language
 
-All five language servers install themselves through Mason on first open — you do not
-install them by hand. `<leader>cl` tells you what actually attached; `<leader>cm` opens
-Mason if something did not.
+Language servers are **external binaries**, not plugins. `lua/lsp.lua` enables a server
+only when its binary is on `PATH`, so a missing one is silent instead of erroring on
+every buffer. Install one and it works on the next launch — no config edit.
 
-### Node.js / TypeScript — `lang.typescript`
+| Language | Server | Installed at |
+| --- | --- | --- |
+| Lua | `lua-language-server` | `~/.local/bin` (3.19.2) |
+| TypeScript / JS | `vtsls` | npm global |
+| Go | `gopls` | `~/go/bin` (Go 1.27 at `~/.local/go`) |
+| Python | `basedpyright-langserver` | `~/.local/bin` (uv tool) |
+| Dart / Flutter | `dart` (via flutter-tools) | Flutter SDK |
+| Kotlin | `kotlin-language-server` | `~/.local/bin`, **JDK 21 required** |
+| JSON | `vscode-json-language-server` | npm global |
+| YAML | `yaml-language-server` | npm global |
+| Bash | `bash-language-server` | npm global |
+| Docker | `docker-langserver` | npm global |
 
-Server is **vtsls**. Beyond the universal keys above:
+### Node.js / TypeScript
 
-| Key | Action |
-| --- | --- |
-| `gD` | go to *source* definition (through the `.d.ts`, to the real code) |
-| `gR` | all references to this **file** |
-| `<leader>cM` | add all missing imports |
-| `<leader>cD` | fix all auto-fixable diagnostics in the file |
-| `<leader>cV` | select the TypeScript version (workspace vs bundled) |
+Server is **vtsls**. `gd` on a library symbol lands in a `.d.ts`; `gD` takes you to the
+declaration. Formatting is prettier.
 
-`gD` is the one worth learning: plain `gd` on a library symbol lands you in a type
-declaration, `gD` takes you to the implementation.
+> **`.vue` files have no dedicated server.** vtsls handles `<script lang="ts">` but not
+> template expression intelligence. If that becomes painful, add
+> `vue-language-server` and point vtsls at the Vue TS plugin — it is the one language
+> gap left by the plugin cut.
 
-For the Simpel backend, run the API in a tmux pane (`C-a -` for a split below) and keep
-Neovim in the top pane. `<leader>Xx` after a save shows every type error at once.
+For the backend, run the API in a tmux pane (`C-a -` for a split below) and keep Neovim
+in the top pane. `<leader>Xx` after a save shows every type error at once.
 
-### Flutter / Dart — `lang.dart` + `flutter-tools.nvim`
+### Flutter / Dart
 
-**LazyVim's Dart extra gives you a language server and nothing else** — no device
-picker, no hot reload, no `flutter run`. `flutter-tools.nvim` fills that gap and is
-mapped under `<leader>F`:
+flutter-tools starts **dartls** itself — `lua/lsp.lua` deliberately does not enable
+`dartls`, because two clients on one buffer make `gd` a coin flip.
 
 | Key | Action |
 | --- | --- |
 | `<leader>Fr` | `flutter run` on the selected device |
 | `<leader>FR` | hot **restart** |
+| `<leader>Fl` | hot **reload** (also happens on save) |
 | `<leader>Fq` | quit the running app |
 | `<leader>Fd` | pick a device |
 | `<leader>Fe` | pick an emulator |
 | `<leader>Fo` | widget outline (invaluable in deep widget trees) |
 | `<leader>FD` | open DevTools |
+| `<leader>FL` | toggle the dev log pane |
+| `<leader>Fs` | restart dartls |
 
-Hot **reload** happens automatically on save. Widget-tree work: `<leader>Fo` for the
-outline, `<leader>ca` on a widget for "wrap with…" / "extract widget".
-
-All five frontends are Flutter Web, so the device you want is usually Chrome:
+All the frontends are Flutter Web, so the device you want is usually Chrome:
 `<leader>Fd` → Chrome, then `<leader>Fr`.
 
-### Go — `lang.go`
+### Go
 
-Server **gopls**, formatting via **gofumpt** + **goimports**, debugging via **Delve**,
-tests via **neotest-go**. Imports are fixed on save; `<leader>co` forces it.
+Server **gopls**, formatting via **gofumpt** + **goimports** (skipped when a binary is
+missing). Tests and debugging are not wired into the editor — use a tmux pane, or add
+`neotest`/`nvim-dap` back deliberately.
 
-| Key | Action |
-| --- | --- |
-| `<leader>tr` | run nearest test |
-| `<leader>tt` | run all tests in the file |
-| `<leader>ts` | test summary panel |
-| `<leader>td` | debug nearest test |
-| `<leader>db` | toggle breakpoint |
-| `<leader>dc` | run / continue |
-
-*(the `<leader>t` and `<leader>d` groups require the `test` and `dap` extras)*
-
-### Kotlin — `lang.kotlin`
+### Kotlin
 
 > **Why this needs a special JDK.** kotlin-language-server bundles a Kotlin compiler
-> whose IntelliJ version parser throws `IllegalArgumentException: 25.0.3` — it cannot
-> parse a Java major version that high — so it dies with exit code 1 on any `.kt`
-> buffer. Fedora 44 ships OpenJDK 25 and **packages nothing older**:
-> `dnf install java-21-openjdk-devel` fails with "No match for argument".
+> whose IntelliJ version parser cannot parse a Java major version above 21, and dies
+> during `initialize` on any `.kt` buffer. Fedora 44 ships only OpenJDK 25, and
+> **Android Studio now bundles 25 as well** (`~/.local/opt/android-studio/jbr`).
 >
-> The way out was already on the machine: **Android Studio bundles JetBrains Runtime 21
-> at `/opt/android-studio/jbr`**, which is the JDK Flutter itself uses (`flutter doctor
-> -v` names it). `lua/plugins/kotlin.lua` points the server at it via `cmd_env`.
-> Verified working.
+> The fix is a JDK 17–21 in `~/.local/jdk`. Temurin 21 is installed there and verified
+> working; `lua/lsp.lua` finds it by path and passes it as `JAVA_HOME`. If none is
+> found the server is left disabled rather than left to crash on every buffer.
 >
-> If Android Studio ever moves, drop any JDK 17–21 into `~/.local/jdk` and the config
-> finds it. If no compatible JDK exists at all it declines to start the server rather
-> than letting it crash on every buffer.
+> KLS also rejects an empty `initializationOptions`: Lua encodes `{}` as JSON `[]` and
+> Gson expects an object. The config passes a real `storagePath` to avoid that.
 
-Set expectations: the Kotlin language server is much weaker than the
-TypeScript or Go ones. Completion and go-to-definition work; deep Android/Gradle
-integration does not. For Android work, Android Studio remains the better tool —
-Neovim is good for editing Kotlin, not for driving the Android build.
+Set expectations: KLS is much weaker than vtsls or gopls. Completion and
+go-to-definition work; deep Android/Gradle integration does not. For Android work,
+Android Studio remains the better tool — Neovim is good for editing Kotlin, not for
+driving the build.
 
-### Python — `lang.python`
+### Python
 
-Server **basedpyright**, linting and formatting via **ruff**.
-
-> LazyVim's Python extra defaults to plain `pyright`, not basedpyright
-> (`vim.g.lazyvim_python_lsp or "pyright"`). `lua/config/options.lua` opts in
-> explicitly. Without that line pyright is never installed, so **only ruff attaches and
-> you silently get no type checking at all** — the failure is invisible, because a
-> linter is still reporting problems.
-
-| Key | Action |
-| --- | --- |
-| `<leader>cv` | select the virtualenv — **do this first in any new project**, or every import resolves as missing |
-| `<leader>dPt` | debug the test method under the cursor |
-| `<leader>dPc` | debug the test class under the cursor |
+Server **basedpyright**, formatting and import sorting via **ruff**. basedpyright
+auto-detects a project `.venv`; if imports resolve as missing, point it at the
+virtualenv with `pyrightconfig.json` (`venvPath` / `venv`) rather than a plugin.
 
 ---
 
 ## 7. Toolchain — verified state
 
-JetBrainsMono Nerd Font is installed and Ptyxis is pointed at it. All 19 Mason packages
-are installed: vtsls, gopls, basedpyright, ruff, kotlin-language-server, json-lsp,
-yaml-language-server, dockerfile-language-server, lua-language-server, prettier, gofumpt,
-goimports, golangci-lint, delve, ktlint, hadolint, sqlfluff, markdownlint-cli2,
-markdown-toc.
+Neovim 0.12.6, **8 plugins**, ~36 ms startup, 30 treesitter parsers.
 
-Verified attaching to real buffers:
-
-| Language | LSP | Treesitter |
+| Language | LSP verified attaching | Formatter |
 | --- | --- | --- |
-| TypeScript | `vtsls` | ok |
-| JavaScript | `vtsls` | ok |
-| Go | `gopls` | ok |
-| Python | `basedpyright` + `ruff` | ok |
-| Dart | `dartls` (one client — no flutter-tools/lspconfig duplicate) | ok |
-| Kotlin | `kotlin_language_server` (under Android Studio's JBR 21) | ok |
+| Lua | `lua_ls` | stylua 2.6.0 |
+| TypeScript | `vtsls` | prettier |
+| JSON | `jsonls` | prettier |
+| YAML | `yamlls` | prettier |
+| Bash | `bashls` | shfmt 3.14.1 |
+| Dockerfile | `dockerls` | — |
+| Go | `gopls` | gofumpt + goimports |
+| Python | `basedpyright` | ruff 0.17.3 |
+| Dart | `dartls` (exactly once) | `dart format` |
+| Kotlin | `kotlin_language_server` | — |
 
-Supporting tools: `fd`, `fzf`, `ripgrep`, `lazygit`, `git`, `gcc`.
-
-Two of these are **not** from Fedora's repos, because Fedora does not package them:
-
-- **lazygit** — upstream release binary in `~/.local/bin/lazygit`. Update by re-running
-  the download; `dnf` will never see it.
-- **JDK 21** — not installed separately at all. Reuses Android Studio's bundled JBR at
-  `/opt/android-studio/jbr` (see §6). Nothing to maintain.
-
-`<leader>cl` shows what attached to the current buffer; `<leader>cm` opens Mason.
+Restart Neovim after installing a binary; `:checkhealth lsp` lists what is enabled and
+what is missing.

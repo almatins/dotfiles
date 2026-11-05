@@ -67,6 +67,7 @@ clue.setup({
     { mode = "n", keys = "<Leader>b", desc = "+buffer" },
     { mode = "n", keys = "<Leader>c", desc = "+code" },
     { mode = "n", keys = "<Leader>f", desc = "+find" },
+    { mode = "n", keys = "<Leader>F", desc = "+flutter" },
     { mode = "n", keys = "<Leader>g", desc = "+git" },
     { mode = "n", keys = "<Leader>s", desc = "+search" },
     { mode = "n", keys = "<Leader>w", desc = "+window" },

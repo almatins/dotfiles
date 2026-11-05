@@ -32,13 +32,13 @@ local servers = {
 --
 --     Exception in thread "main" java.lang.IllegalArgumentException: 25.0.3
 --
--- Fedora 44 ships OpenJDK 25 and packages nothing older, so the server dies with exit
--- code 1 the instant a .kt buffer opens. Android Studio bundles JetBrains Runtime 21
--- at /opt/android-studio/jbr -- the same JDK Flutter uses. If Android Studio moves,
--- drop any JDK 17-21 into ~/.local/jdk.
+-- Fedora 44 ships OpenJDK 25 and packages nothing older, and Android Studio now bundles
+-- 25 as well (~/.local/opt/android-studio/jbr), so neither works. A JDK 17-21 dropped
+-- into ~/.local/jdk is the only thing that starts the server: verified with Temurin 21.
+-- If none is found the server is left disabled rather than left to crash on every .kt
+-- buffer, which is worse than no server at all.
 local function usable_jdk()
   local candidates = {
-    "/opt/android-studio/jbr",
     vim.fn.expand("~") .. "/.local/jdk/jdk-21*",
     vim.fn.expand("~") .. "/.local/jdk/jdk-17*",
     "/usr/lib/jvm/java-21-openjdk*",
@@ -58,7 +58,13 @@ end
 
 local jdk = usable_jdk()
 if jdk and vim.fn.executable("kotlin-language-server") == 1 then
-  vim.lsp.config("kotlin_language_server", { cmd_env = { JAVA_HOME = jdk } })
+  vim.lsp.config("kotlin_language_server", {
+    cmd_env = { JAVA_HOME = jdk },
+    -- An empty Lua table encodes as JSON `[]`. KLS parses initializationOptions with
+    -- Gson as an object and dies with "Expected BEGIN_OBJECT but was BEGIN_ARRAY at
+    -- path $" during initialize. A real field fixes the encoding (and the cache path).
+    init_options = { storagePath = vim.fn.stdpath("cache") .. "/kotlin-language-server" },
+  })
   servers.kotlin_language_server = "kotlin-language-server"
 end
 
@@ -98,8 +104,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
     end
     -- Colour swatches next to Color(0xFF...) in Dart and hex literals in CSS.
+    -- 0.12 signature: enable(enable, { bufnr, client_id }) — passing a bare buffer
+    -- number here fails validation.
     if client:supports_method("textDocument/documentColor") then
-      vim.lsp.document_color.enable(true, ev.buf)
+      vim.lsp.document_color.enable(true, { bufnr = ev.buf, client_id = client.id })
     end
   end,
 })

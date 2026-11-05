@@ -49,10 +49,10 @@ on `PATH`, so a missing one is silent instead of an error on every buffer.
 | --- | --- | --- |
 | Lua | `lua-language-server` | GitHub release → `~/.local/bin` |
 | TypeScript/JS | `vtsls` | `npm i -g @vtsls/language-server` |
-| Go | `gopls` | `dnf install golang` then `go install golang.org/x/tools/gopls@latest` |
+| Go | `gopls` | Go 1.27 at `~/.local/go`; `go install golang.org/x/tools/gopls@latest` → `~/go/bin` |
 | Python | `basedpyright-langserver` | `uv tool install basedpyright` |
 | Dart/Flutter | `dart` | already on PATH via the Flutter SDK |
-| Kotlin | `kotlin-language-server` | GitHub release; **needs JDK ≤ 21** (the config uses `/opt/android-studio/jbr`) |
+| Kotlin | `kotlin-language-server` | GitHub release; **needs JDK ≤ 21** at `~/.local/jdk` — Android Studio now bundles 25, which crashes it |
 | JSON/YAML | `vscode-json-language-server`, `yaml-language-server` | `npm i -g vscode-langservers-extracted yaml-language-server` |
 | Bash | `bash-language-server` | `npm i -g bash-language-server` |
 | Docker | `docker-langserver` | `npm i -g dockerfile-language-server-nodejs` |

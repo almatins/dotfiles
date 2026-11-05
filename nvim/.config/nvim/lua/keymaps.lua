@@ -121,6 +121,43 @@ map("n", "<leader>co", function()
 end, { desc = "Organize imports" })
 map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 map("n", "<leader>cl", "<cmd>checkhealth lsp<cr>", { desc = "LSP info" })
+-- 0.11 ships signature help on <C-s> in insert mode, but <C-s> is save here (and the
+-- tmux/bash layer already expects it). Move it to gK / <C-k>.
+map("n", "gK", vim.lsp.buf.signature_help, { desc = "Signature help" })
+map("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
+
+-- ---------------------------------------------------------------------------
+-- Flutter (flutter-tools)
+-- ---------------------------------------------------------------------------
+-- Capital F: lowercase <leader>f is the find group. dartls is started by
+-- flutter-tools, not by lsp.lua, so these commands are the only way to drive it.
+local flutter = {
+  { "<leader>Fr", "FlutterRun", "Run" },
+  { "<leader>FR", "FlutterRestart", "Hot restart" },
+  { "<leader>Fl", "FlutterReload", "Hot reload" },
+  { "<leader>Fq", "FlutterQuit", "Quit" },
+  { "<leader>Fd", "FlutterDevices", "Devices" },
+  { "<leader>Fe", "FlutterEmulators", "Emulators" },
+  { "<leader>Fo", "FlutterOutlineToggle", "Widget outline" },
+  { "<leader>FD", "FlutterDevTools", "DevTools" },
+  { "<leader>FL", "FlutterLogToggle", "Dev log" },
+  { "<leader>Fs", "FlutterLspRestart", "Restart dartls" },
+}
+-- flutter-tools only registers its commands on the first *.dart or pubspec.yaml buffer
+-- (BufEnter, once). Pressing <leader>Fr in a JS file would otherwise be E492.
+local function flutter_cmd(name)
+  return function()
+    if vim.fn.exists(":" .. name) == 2 then
+      vim.cmd(name)
+    else
+      vim.notify("flutter-tools: open a .dart or pubspec.yaml buffer first", vim.log.levels.WARN)
+    end
+  end
+end
+
+for _, m in ipairs(flutter) do
+  map("n", m[1], flutter_cmd(m[2]), { desc = m[3] })
+end
 
 -- ---------------------------------------------------------------------------
 -- Git (gitsigns)

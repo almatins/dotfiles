@@ -67,7 +67,8 @@ end, { desc = "Format buffer" })
 
 -- Markdown preview in the terminal -------------------------------------------
 -- render-markdown already renders in the buffer. This opens glow in a split for a
--- full rendered, scrollable view of the file; q quits glow's pager.
+-- full rendered, scrollable view of the file; q quits the pager. With wrap off, scroll
+-- sideways with Left / Right.
 map("n", "<leader>mp", function()
   local file = vim.api.nvim_buf_get_name(0)
   if vim.bo.filetype ~= "markdown" or file == "" then
@@ -75,8 +76,22 @@ map("n", "<leader>mp", function()
     return
   end
   vim.cmd("write")
+
+  -- Follow the wrap setting of the markdown window (off by default, <leader>uw toggles).
+  -- glow has no "no wrap" switch -- `-w 0` falls back to 80 -- so wrap-off means a very
+  -- wide width plus `less -S`, which chops long lines and scrolls sideways with the
+  -- Left / Right arrow keys. Wrap-on keeps glow's own wrapping at the window width.
+  local args = { "glow", "-p", file }
+  local opts = { term = true }
+  if not vim.wo.wrap then
+    args = { "glow", "-p", "-w", "1000", file }
+    -- Only set when non-empty: an empty Lua table is rejected here (E475) because it
+    -- encodes as a list, not a dict.
+    opts.env = { PAGER = "less -RS" }
+  end
+
   vim.cmd("botright vnew")
-  vim.fn.jobstart({ "glow", "-p", file }, { term = true })
+  vim.fn.jobstart(args, opts)
   vim.cmd.startinsert()
 end, { desc = "Markdown preview (glow)" })
 map("n", "<leader>mt", "<cmd>RenderMarkdown toggle<cr>", { desc = "Toggle markdown rendering" })

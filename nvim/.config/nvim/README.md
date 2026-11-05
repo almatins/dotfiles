@@ -47,7 +47,7 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | `<leader>sd` `<leader>sD` | diagnostics: buffer / workspace |
 | `<leader>e` `<leader>E` | oil: current file's dir / cwd (`g?` inside oil for its keys) |
 | `<leader>cf` | format |
-| `<leader>mp` / `<leader>mt` | markdown preview in glow / toggle in-buffer render |
+| `<leader>mp` / `<leader>mt` | markdown preview in glow / toggle in-buffer render. The preview follows the window's wrap setting: wrap off (default) chops long lines and scrolls sideways with Left / Right; `<leader>uw` first for wrapped output |
 | `<leader>?` | keymaps of the current buffer only (which-key) |
 | `<leader>qs` `qS` `ql` `qd` | session: restore this dir / pick one / restore last / don't save this one |
 | `ysiw"` `ds"` `cs"'` `S"` (visual) | surround: add / delete / change / wrap selection |

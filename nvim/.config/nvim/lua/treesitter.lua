@@ -2,24 +2,18 @@
 --
 -- On the `main` branch there is no `ensure_installed` and no highlight module: you
 -- install the parsers you want and start highlighting per buffer. Parsers compile
--- from C on install (cc and make are present).
+-- from C on install (cc, make and the tree-sitter CLI are present).
 
 local want = {
   -- editing this config
   "lua", "vim", "vimdoc", "query",
-  -- Node / Vue frontends and the Express services
-  "javascript", "typescript", "tsx", "vue", "json", "html", "css", "scss",
-  -- Flutter
-  "dart",
-  -- MariSafe backend
-  "go", "gomod", "gosum",
-  -- Kotlin
-  "kotlin",
-  -- Python
-  "python",
-  -- prose, config and infra files this repo is full of
-  "bash", "yaml", "toml", "dockerfile", "sql", "markdown", "markdown_inline",
-  "gitcommit", "diff", "gitignore", "xml",
+  -- web
+  "javascript", "typescript", "tsx", "json", "html", "css",
+  -- apps
+  "python", "go", "gomod", "gosum", "dart", "kotlin",
+  -- markdown (+ inline) is what render-markdown.nvim parses; the rest are the
+  -- languages most often seen inside fenced code blocks and config files
+  "markdown", "markdown_inline", "yaml", "toml", "bash", "diff", "gitcommit",
 }
 
 local ok, ts = pcall(require, "nvim-treesitter")

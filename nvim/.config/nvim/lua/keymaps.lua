@@ -1,194 +1,108 @@
--- Keymaps: the tmux-mirrored layer from KEYMAP.md.
+-- Keymaps.
 --
--- Space is the leader. tmux owns C-a and nothing else, so the same letter means the
--- same verb one scope inward:
+-- Rule: plugins keep their own default keymaps. A key is defined here only for a plugin
+-- that ships no default entry point (fzf-lua, oil, conform) or for a Neovim built-in
+-- that needs a small convenience. Space is the leader (see options.lua).
 --
---     concept      tmux      neovim
---     split right  C-a |     <leader>|
---     split below  C-a -     <leader>-
---     close        C-a x     <leader>x
---     zoom         C-a z     <leader>z
---     find         C-a f     <leader>ff
+-- Left alone on purpose, because the plugin or Neovim already binds them:
+--   blink.cmp  <C-space> <C-n> <C-p> <C-y> <C-e> <C-k>   (insert-mode completion)
+--   oil        g? (help) <CR> - <C-s> <C-h> <C-t> <C-p> <C-l> ...  (inside oil buffers)
+--   LSP        K gd gr gI gy gra grn gO gD ]d [d          (Neovim 0.11+ built-ins)
 
 local map = vim.keymap.set
 
--- ---------------------------------------------------------------------------
--- Increment / decrement, rehomed off <C-a>
--- ---------------------------------------------------------------------------
--- tmux consumes <C-a> before Neovim ever sees the byte, so Vim's increment command is
--- unreachable. It moves to +, and <C-x> follows to - for symmetry. The keys they
--- displace (first non-blank of the next/previous line) are no loss.
+-- tmux consumes <C-a> before Neovim sees it, so Vim's increment is unreachable there.
+-- It moves to +/-. Inside an oil buffer, oil's own buffer-local `-` (go to parent) wins.
 map({ "n", "v" }, "+", "<C-a>", { desc = "Increment number" })
 map({ "n", "v" }, "-", "<C-x>", { desc = "Decrement number" })
-map("v", "g+", "g<C-a>", { desc = "Increment as sequence" })
-map("v", "g-", "g<C-x>", { desc = "Decrement as sequence" })
 
--- ---------------------------------------------------------------------------
--- Windows and buffers
--- ---------------------------------------------------------------------------
-map("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Split right" })
-map("n", "<leader>-", "<cmd>split<cr>", { desc = "Split below" })
-map("n", "<leader>z", function()
-  require("mini.misc").zoom()
-end, { desc = "Zoom window" })
-map("n", "<leader>wd", "<cmd>close<cr>", { desc = "Close window" })
-
--- Buffer close keeps the window and its layout: plain :bdelete tears the split down.
-map("n", "<leader>x", function()
-  require("mini.bufremove").delete(0, false)
-end, { desc = "Close buffer" })
-map("n", "<leader>bd", function()
-  require("mini.bufremove").delete(0, false)
-end, { desc = "Close buffer" })
-map("n", "<leader>bb", "<cmd>b#<cr>", { desc = "Alternate buffer" })
-map("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
-map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer" })
-map("n", "[b", "<cmd>bprevious<cr>", { desc = "Previous buffer" })
-map("n", "]b", "<cmd>bnext<cr>", { desc = "Next buffer" })
-
--- Moving lines and selections is mini.move's default: <A-j>/<A-k> in n/v/x mode.
--- Remapping them here would only add a second definition of the same thing.
-
--- ---------------------------------------------------------------------------
--- Saving and search highlight
--- ---------------------------------------------------------------------------
 map({ "n", "i", "v" }, "<C-s>", "<cmd>write<cr>", { desc = "Save file" })
 map("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear search highlight" })
 
--- ---------------------------------------------------------------------------
--- Finding (mini.pick + mini.extra)
--- ---------------------------------------------------------------------------
-map("n", "<leader><space>", function()
-  require("mini.pick").builtin.files()
-end, { desc = "Find files" })
-map("n", "<leader>ff", function()
-  require("mini.pick").builtin.files()
-end, { desc = "Find files" })
-map("n", "<leader>fr", function()
-  require("mini.extra").pickers.oldfiles()
-end, { desc = "Recent files" })
-map("n", "<leader>fg", function()
-  require("mini.extra").pickers.git_files()
-end, { desc = "Find git files" })
-map("n", "<leader>,", function()
-  require("mini.pick").builtin.buffers()
-end, { desc = "Buffers" })
-map("n", "<leader>/", function()
-  require("mini.pick").builtin.grep_live()
-end, { desc = "Grep (root)" })
-map("n", "<leader>sg", function()
-  require("mini.pick").builtin.grep_live()
-end, { desc = "Grep (root)" })
-map("n", "<leader>sw", function()
-  require("mini.pick").builtin.grep({ pattern = vim.fn.expand("<cword>") })
-end, { desc = "Grep word under cursor" })
-map("n", "<leader>sd", function()
-  require("mini.extra").pickers.diagnostic()
-end, { desc = "Diagnostics (picker)" })
-map("n", "<leader>sk", function()
-  require("mini.extra").pickers.keymaps()
-end, { desc = "Search keymaps" })
-map("n", "<leader>sh", function()
-  require("mini.pick").builtin.help()
-end, { desc = "Search help" })
-map("n", "<leader>ss", function()
-  require("mini.extra").pickers.lsp({ scope = "document_symbol" })
-end, { desc = "Symbols in buffer" })
-map("n", "<leader>sS", function()
-  require("mini.extra").pickers.lsp({ scope = "workspace_symbol" })
-end, { desc = "Symbols in workspace" })
+-- Windows ---------------------------------------------------------------------
+map("n", "<leader>|", "<cmd>vsplit<cr>", { desc = "Split right" })
+map("n", "<leader>-", "<cmd>split<cr>", { desc = "Split below" })
+map("n", "<leader>wd", "<cmd>close<cr>", { desc = "Close window" })
 
--- File explorer
-map("n", "<leader>e", function()
-  require("mini.files").open()
-end, { desc = "File explorer" })
-map("n", "<leader>E", function()
-  require("mini.files").open(vim.api.nvim_buf_get_name(0), false)
-end, { desc = "Reveal current file" })
+-- Word wrap is off by default (options.lua); this flips it for the current window.
+map("n", "<leader>uw", function()
+  vim.wo.wrap = not vim.wo.wrap
+  vim.notify("wrap " .. (vim.wo.wrap and "on" or "off"))
+end, { desc = "Toggle word wrap" })
 
--- ---------------------------------------------------------------------------
--- Code
--- ---------------------------------------------------------------------------
--- gd / gr / gI / gy / K / gra are Neovim 0.11+ built-ins and are deliberately NOT
--- remapped: every override is a thing that breaks on upgrade.
-map("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Code action" })
-map("n", "<leader>cr", vim.lsp.buf.rename, { desc = "Rename symbol" })
-map("n", "<leader>co", function()
-  vim.lsp.buf.code_action({
-    context = { only = { "source.organizeImports" }, diagnostics = {} },
-    apply = true,
-  })
-end, { desc = "Organize imports" })
-map("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
-map("n", "<leader>cl", "<cmd>checkhealth lsp<cr>", { desc = "LSP info" })
--- 0.11 ships signature help on <C-s> in insert mode, but <C-s> is save here (and the
--- tmux/bash layer already expects it). Move it to gK / <C-k>.
-map("n", "gK", vim.lsp.buf.signature_help, { desc = "Signature help" })
-map("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Signature help" })
-
--- ---------------------------------------------------------------------------
--- Flutter (flutter-tools)
--- ---------------------------------------------------------------------------
--- Capital F: lowercase <leader>f is the find group. dartls is started by
--- flutter-tools, not by lsp.lua, so these commands are the only way to drive it.
-local flutter = {
-  { "<leader>Fr", "FlutterRun", "Run" },
-  { "<leader>FR", "FlutterRestart", "Hot restart" },
-  { "<leader>Fl", "FlutterReload", "Hot reload" },
-  { "<leader>Fq", "FlutterQuit", "Quit" },
-  { "<leader>Fd", "FlutterDevices", "Devices" },
-  { "<leader>Fe", "FlutterEmulators", "Emulators" },
-  { "<leader>Fo", "FlutterOutlineToggle", "Widget outline" },
-  { "<leader>FD", "FlutterDevTools", "DevTools" },
-  { "<leader>FL", "FlutterLogToggle", "Dev log" },
-  { "<leader>Fs", "FlutterLspRestart", "Restart dartls" },
-}
--- flutter-tools only registers its commands on the first *.dart or pubspec.yaml buffer
--- (BufEnter, once). Pressing <leader>Fr in a JS file would otherwise be E492.
-local function flutter_cmd(name)
+-- Find (fzf-lua) --------------------------------------------------------------
+-- fzf-lua defines no global keymaps of its own.
+local function fzf(name, opts)
   return function()
-    if vim.fn.exists(":" .. name) == 2 then
-      vim.cmd(name)
-    else
-      vim.notify("flutter-tools: open a .dart or pubspec.yaml buffer first", vim.log.levels.WARN)
-    end
+    require("fzf-lua")[name](opts)
   end
 end
 
-for _, m in ipairs(flutter) do
-  map("n", m[1], flutter_cmd(m[2]), { desc = m[3] })
+map("n", "<leader><space>", fzf("files"), { desc = "Find files" })
+map("n", "<leader>ff", fzf("files"), { desc = "Find files" })
+map("n", "<leader>fr", fzf("oldfiles"), { desc = "Recent files" })
+map("n", "<leader>fg", fzf("git_files"), { desc = "Git files" })
+map("n", "<leader>,", fzf("buffers"), { desc = "Buffers" })
+map("n", "<leader>/", fzf("live_grep"), { desc = "Find in files" })
+map("n", "<leader>sg", fzf("live_grep"), { desc = "Find in files" })
+map({ "n", "x" }, "<leader>sw", fzf("grep_cword"), { desc = "Grep word under cursor" })
+map("n", "<leader>sd", fzf("diagnostics_document"), { desc = "Diagnostics (buffer)" })
+map("n", "<leader>sD", fzf("diagnostics_workspace"), { desc = "Diagnostics (workspace)" })
+map("n", "<leader>ss", fzf("lsp_document_symbols"), { desc = "Symbols in buffer" })
+map("n", "<leader>sS", fzf("lsp_live_workspace_symbols"), { desc = "Symbols in workspace" })
+map("n", "<leader>sk", fzf("keymaps"), { desc = "Search keymaps" })
+map("n", "<leader>sh", fzf("helptags"), { desc = "Search help" })
+map("n", "<leader>sr", fzf("resume"), { desc = "Resume last search" })
+
+-- File explorer (oil) ---------------------------------------------------------
+-- oil defines no global keymap. Opens the directory of the current file.
+map("n", "<leader>e", "<cmd>Oil<cr>", { desc = "File explorer" })
+map("n", "<leader>E", function()
+  require("oil").open(vim.fn.getcwd())
+end, { desc = "File explorer (cwd)" })
+
+-- Format (conform) ------------------------------------------------------------
+map({ "n", "v" }, "<leader>cf", function()
+  require("conform").format({ async = true, lsp_format = "fallback" })
+end, { desc = "Format buffer" })
+
+-- Markdown preview in the terminal -------------------------------------------
+-- render-markdown already renders in the buffer. This opens glow in a split for a
+-- full rendered, scrollable view of the file; q quits glow's pager.
+map("n", "<leader>mp", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  if vim.bo.filetype ~= "markdown" or file == "" then
+    vim.notify("not a saved markdown buffer", vim.log.levels.WARN)
+    return
+  end
+  vim.cmd("write")
+  vim.cmd("botright vnew")
+  vim.fn.jobstart({ "glow", "-p", file }, { term = true })
+  vim.cmd.startinsert()
+end, { desc = "Markdown preview (glow)" })
+map("n", "<leader>mt", "<cmd>RenderMarkdown toggle<cr>", { desc = "Toggle markdown rendering" })
+
+-- AI agents (sidekick) --------------------------------------------------------
+-- sidekick defines no global keymaps either; these are the ones its README suggests,
+-- plus one key per agent. <leader>aa toggles whichever agent you used last.
+local function cli(fn, opts)
+  return function()
+    require("sidekick.cli")[fn](opts)
+  end
 end
 
--- ---------------------------------------------------------------------------
--- Git (gitsigns)
--- ---------------------------------------------------------------------------
-map("n", "<leader>gs", function()
-  require("gitsigns").stage_hunk()
-end, { desc = "Stage hunk" })
-map("n", "<leader>gr", function()
-  require("gitsigns").reset_hunk()
-end, { desc = "Reset hunk" })
-map("n", "<leader>gp", function()
-  require("gitsigns").preview_hunk()
-end, { desc = "Preview hunk" })
-map("n", "<leader>gb", function()
-  require("gitsigns").blame_line({ full = true })
-end, { desc = "Blame line" })
-map("n", "<leader>gd", function()
-  require("gitsigns").diffthis()
-end, { desc = "Diff this" })
-map("n", "]h", function()
-  require("gitsigns").next_hunk()
-end, { desc = "Next hunk" })
-map("n", "[h", function()
-  require("gitsigns").prev_hunk()
-end, { desc = "Previous hunk" })
+map({ "n", "t", "i", "x" }, "<c-.>", cli("focus"), { desc = "Sidekick: focus" })
+map("n", "<leader>aa", cli("toggle"), { desc = "Sidekick: toggle agent" })
+map("n", "<leader>as", cli("select"), { desc = "Sidekick: select agent" })
+map("n", "<leader>ad", cli("close"), { desc = "Sidekick: detach session" })
+map({ "n", "x" }, "<leader>at", cli("send", { msg = "{this}" }), { desc = "Sidekick: send this" })
+map("n", "<leader>af", cli("send", { msg = "{file}" }), { desc = "Sidekick: send file" })
+map("x", "<leader>av", cli("send", { msg = "{selection}" }), { desc = "Sidekick: send selection" })
+map({ "n", "x" }, "<leader>ap", cli("prompt"), { desc = "Sidekick: pick prompt" })
 
--- ---------------------------------------------------------------------------
--- Diagnostics lists and quitting
--- ---------------------------------------------------------------------------
-map("n", "<leader>Xx", function()
-  vim.diagnostic.setloclist({ open = true })
-end, { desc = "Diagnostics list" })
-map("n", "<leader>Xq", "<cmd>copen<cr>", { desc = "Quickfix list" })
-map("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit all" })
+-- pi is on `i`, not `p`: <leader>ap is sidekick's own "pick prompt" key above.
+for key, name in pairs({ c = "claude", x = "codex", o = "opencode", i = "pi", k = "kiro" }) do
+  map("n", "<leader>a" .. key, cli("toggle", { name = name, focus = true }), {
+    desc = "Sidekick: " .. name,
+  })
+end

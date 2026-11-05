@@ -1,109 +1,94 @@
 -- Plugins, managed by Neovim 0.12's built-in vim.pack. No bootstrap snippet: vim.pack
 -- clones anything missing on the first start.
 --
---   :lua vim.pack.update()                        update every plugin
---   :lua vim.pack.get()                           list what is installed
---   :lua vim.pack.update({ 'mini.nvim' })         update one
+--   :lua vim.pack.update()                   update every plugin (shows a diff first)
+--   :lua vim.pack.get()                      list what is installed
+--   :lua vim.pack.update({ 'blink.cmp' })    update one
 --
 -- Plugins land in ~/.local/share/nvim/site/pack/core/opt/ and are NOT in this repo.
 -- The committed lockfile (nvim-pack-lock.json) pins the exact revision of each.
 
-vim.pack.add({
-  { src = "https://github.com/folke/tokyonight.nvim" },
-  { src = "https://github.com/echasnovski/mini.nvim" },
-  { src = "https://github.com/neovim/nvim-lspconfig" },
-  -- `main` is the rewrite for 0.11+; `master` is the unmaintained old branch and does
-  -- not track 0.12.
-  { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
-  { src = "https://github.com/lewis6991/gitsigns.nvim" },
-  { src = "https://github.com/stevearc/conform.nvim" },
-  { src = "https://github.com/akinsho/flutter-tools.nvim" },
-  -- flutter-tools dependency, but vim.pack has no dependency resolution: list it.
-  { src = "https://github.com/nvim-lua/plenary.nvim" },
+-- nvim-treesitter's parsers must be rebuilt whenever the plugin is installed/updated.
+-- Registered BEFORE vim.pack.add() so it also fires on the very first clone.
+vim.api.nvim_create_autocmd("PackChanged", {
+  group = vim.api.nvim_create_augroup("pack-changed", { clear = true }),
+  callback = function(ev)
+    local d = ev.data
+    if d.spec.name == "nvim-treesitter" and (d.kind == "install" or d.kind == "update") then
+      if not d.active then
+        vim.cmd.packadd("nvim-treesitter")
+      end
+      pcall(vim.cmd, "TSUpdate")
+    end
+  end,
 })
 
--- Colourscheme ---------------------------------------------------------------
-require("tokyonight").setup({ style = "night" })
-vim.cmd.colorscheme("tokyonight")
+vim.pack.add({
+  { src = "https://github.com/nvim-mini/mini.icons" },
+  { src = "https://github.com/ibhagwan/fzf-lua" },
+  { src = "https://github.com/stevearc/oil.nvim" },
+  -- 1.x tags ship a prebuilt Rust fuzzy matcher, so no Rust toolchain is needed.
+  { src = "https://github.com/saghen/blink.cmp", version = vim.version.range("1.*") },
+  -- Only supplies the per-server default configs; Neovim itself runs the client.
+  { src = "https://github.com/neovim/nvim-lspconfig" },
+  -- `main` is the rewrite for 0.11+; `master` is the unmaintained old branch.
+  { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
+  { src = "https://github.com/stevearc/conform.nvim" },
+  { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
+  { src = "https://github.com/folke/sidekick.nvim" },
+}, { confirm = false })
 
--- mini.nvim ------------------------------------------------------------------
--- One repo, several small modules. Chosen over telescope/fzf-lua/snacks because it
--- needs no third-party plugin and no external binary for its pickers (fzf is absent;
--- fd and rg are on PATH and get used when present).
+-- Icons ----------------------------------------------------------------------
+-- Tiny and dependency-free; lets oil, fzf-lua and render-markdown find icons without
+-- nvim-web-devicons.
 require("mini.icons").setup()
 MiniIcons.mock_nvim_web_devicons()
 
-require("mini.statusline").setup()
-require("mini.pick").setup()
-require("mini.extra").setup()
-require("mini.files").setup({ windows = { preview = true } })
-require("mini.ai").setup()
-require("mini.pairs").setup()
-require("mini.surround").setup()
-require("mini.bufremove").setup()
-require("mini.move").setup()
-require("mini.misc").setup() -- MiniMisc.zoom() backs <leader>z
+-- Fuzzy finder ---------------------------------------------------------------
+-- Shells out to fzf, fd and ripgrep. Also takes over vim.ui.select, so code actions
+-- and other prompts use the same picker.
+local fzf = require("fzf-lua")
+fzf.setup({
+  files = { formatter = "path.filename_first" },
+})
+fzf.register_ui_select()
 
--- Leader discoverability: hold <leader> for timeoutlen and a menu of what is bound
--- under it appears.
-local clue = require("mini.clue")
-clue.setup({
-  triggers = {
-    { mode = "n", keys = "<Leader>" },
-    { mode = "x", keys = "<Leader>" },
-    { mode = "n", keys = "g" },
-    { mode = "x", keys = "g" },
-    { mode = "n", keys = "[" },
-    { mode = "n", keys = "]" },
-    { mode = "n", keys = "<C-w>" },
-    { mode = "n", keys = "z" },
-  },
-  clues = {
-    clue.gen_clues.g(),
-    clue.gen_clues.windows(),
-    clue.gen_clues.z(),
-    clue.gen_clues.builtin_completion(),
-    clue.gen_clues.square_brackets(),
-    { mode = "n", keys = "<Leader>b", desc = "+buffer" },
-    { mode = "n", keys = "<Leader>c", desc = "+code" },
-    { mode = "n", keys = "<Leader>f", desc = "+find" },
-    { mode = "n", keys = "<Leader>F", desc = "+flutter" },
-    { mode = "n", keys = "<Leader>g", desc = "+git" },
-    { mode = "n", keys = "<Leader>s", desc = "+search" },
-    { mode = "n", keys = "<Leader>w", desc = "+window" },
-    { mode = "n", keys = "<Leader>X", desc = "+diagnostics" },
-  },
-  window = { delay = 300, config = { width = "auto" } },
+-- File explorer --------------------------------------------------------------
+-- The directory is a buffer: rename, move and delete by editing text, then :w.
+-- Oil's default in-buffer keymaps are kept as-is (g? lists them).
+require("oil").setup({
+  default_file_explorer = true,
+  view_options = { show_hidden = true },
 })
 
--- Git ------------------------------------------------------------------------
-require("gitsigns").setup({
-  signs = {
-    add = { text = "│" },
-    change = { text = "│" },
-    delete = { text = "_" },
-    topdelete = { text = "‾" },
-    changedelete = { text = "~" },
-  },
+-- Completion -----------------------------------------------------------------
+-- Default preset: <C-space> open, <C-n>/<C-p> move, <C-y> accept, <C-e> dismiss,
+-- <C-k> signature help. Switch to preset = "enter" for accept-on-Enter.
+require("blink.cmp").setup({
+  keymap = { preset = "default" },
+  completion = { documentation = { auto_show = true, auto_show_delay_ms = 250 } },
+  signature = { enabled = true },
+  sources = { default = { "lsp", "path", "snippets", "buffer" } },
 })
 
--- Flutter --------------------------------------------------------------------
--- dartls alone is not enough for Flutter work: no device picker, no hot reload, no
--- `flutter run`, no DevTools. flutter-tools starts dartls itself, so lsp.lua
--- deliberately does not enable dartls (two clients on one buffer make `gd` a coin
--- flip).
-require("flutter-tools").setup({
-  lsp = {
-    settings = {
-      showTodos = true,
-      completeFunctionCalls = true,
-      renameFilesWithClasses = "prompt",
-      updateImportsOnRename = true,
+-- Markdown -------------------------------------------------------------------
+-- Rendered in the buffer itself (headings, tables, code blocks, checkboxes). Needs the
+-- `markdown` and `markdown_inline` tree-sitter parsers, installed in treesitter.lua.
+require("render-markdown").setup({
+  file_types = { "markdown" },
+})
+
+-- AI agents ------------------------------------------------------------------
+-- sidekick runs each CLI agent in a terminal split and can pipe the current file,
+-- selection or diagnostics into it. claude, codex and opencode are built in; pi and
+-- kiro-cli are added below. Keymaps live in keymaps.lua.
+require("sidekick").setup({
+  nes = { enabled = false }, -- next-edit-suggestions needs Copilot; not used here
+  cli = {
+    picker = "fzf-lua", -- the default is snacks.nvim, which is not installed
+    tools = {
+      pi = { cmd = { "pi" } },
+      kiro = { cmd = { "kiro-cli" } },
     },
   },
-  widget_guides = { enabled = true },
-  closing_tags = { enabled = true, highlight = "Comment", prefix = "// " },
-  dev_log = { enabled = true, open_cmd = "botright 15split" },
-  dev_tools = { autostart = false, auto_open_browser = false },
-  outline = { open_cmd = "botright 40vnew", auto_open = false },
 })

@@ -1,11 +1,14 @@
--- Minimal Neovim config, built on 0.12 built-ins.
+-- Neovim config built on 0.12 built-ins.
 --
---   vim.pack        plugin manager (no lazy.nvim, no LazyVim)
---   vim.lsp.*       LSP, completion, diagnostics, document colour
---   vim.treesitter  syntax highlighting
+--   vim.pack        plugin manager (no lazy.nvim)
+--   vim.lsp.*       LSP client, diagnostics, document colour
+--   vim.treesitter  highlighting
 --
--- Load order matters: options set the leader and UI before any plugin is configured,
--- and `plugins` has to register the packs before anything requires them.
+-- Rule: keep every plugin's own default keymaps. A custom key is added only where a
+-- plugin has no default entry point (fzf-lua, oil, conform have none) -- see keymaps.lua.
+--
+-- Load order matters: options set the leader before any keymap exists, and `plugins`
+-- must register the packs before anything requires them.
 
 require("options")
 require("plugins")

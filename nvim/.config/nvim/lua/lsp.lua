@@ -6,25 +6,27 @@
 --     gd      definition            gra    code action
 --     gr      references            gO     document symbols
 --     gI      implementation        gD     declaration
---     gy      type definition       C-s    signature help (insert mode, built in)
---     ]d [d   next/prev diagnostic
+--     gy      type definition       ]d [d  next/prev diagnostic
 --
--- C-s is why ~/.bashrc runs `stty -ixon`: with flow control on the terminal eats it.
+-- Insert-mode signature help is blink.cmp's default <C-k> (see plugins.lua).
 
 -- Server name (as nvim-lspconfig knows it) -> the binary it needs on PATH.
 --
--- Nothing installs these any more: Mason is gone by design. Install a server with the
--- language's own toolchain (npm -g, go install, uv tool install, GitHub release into
--- ~/.local/bin) and it lights up on the next launch -- no edit to this file.
+-- Nothing installs these: install a server with the language's own toolchain (npm -g,
+-- go install, dnf, GitHub release into ~/.local/bin) and it lights up on the next
+-- launch -- no edit to this file.
 local servers = {
   lua_ls = "lua-language-server",
-  vtsls = "vtsls",
-  gopls = "gopls",
   basedpyright = "basedpyright-langserver",
+  ruff = "ruff",
+  gopls = "gopls",
+  vtsls = "vtsls",
+  html = "vscode-html-language-server",
+  cssls = "vscode-css-language-server",
   jsonls = "vscode-json-language-server",
   yamlls = "yaml-language-server",
-  bashls = "bash-language-server",
-  dockerls = "docker-langserver",
+  marksman = "marksman",
+  dartls = "dart", -- ships with the Flutter/Dart SDK: `dart language-server`
 }
 
 -- kotlin-language-server bundles a Kotlin compiler built on IntelliJ's JavaVersion
@@ -32,11 +34,9 @@ local servers = {
 --
 --     Exception in thread "main" java.lang.IllegalArgumentException: 25.0.3
 --
--- Fedora 44 ships OpenJDK 25 and packages nothing older, and Android Studio now bundles
--- 25 as well (~/.local/opt/android-studio/jbr), so neither works. A JDK 17-21 dropped
--- into ~/.local/jdk is the only thing that starts the server: verified with Temurin 21.
--- If none is found the server is left disabled rather than left to crash on every .kt
--- buffer, which is worse than no server at all.
+-- Fedora 44 ships OpenJDK 25 and packages nothing older, so a JDK 17-21 has to be
+-- dropped into ~/.local/jdk (verified with Temurin 21). If none is found the server is
+-- left disabled rather than crashing on every .kt buffer.
 local function usable_jdk()
   local candidates = {
     vim.fn.expand("~") .. "/.local/jdk/jdk-21*",
@@ -68,16 +68,13 @@ if jdk and vim.fn.executable("kotlin-language-server") == 1 then
   servers.kotlin_language_server = "kotlin-language-server"
 end
 
--- Enable only servers whose binary actually exists. vim.lsp.enable() on a missing
--- command throws on every matching buffer open, which is unbearable.
-for name, binary in pairs(servers) do
-  if vim.fn.executable(binary) == 1 then
-    vim.lsp.enable(name)
-  end
-end
+-- Every server gets blink.cmp's completion capabilities (snippets, resolve, etc.).
+vim.lsp.config("*", {
+  capabilities = require("blink.cmp").get_lsp_capabilities(),
+})
 
--- lua_ls knows nothing about this config's own globals (vim, MiniIcons, Snacks, ...).
--- Pointing it at the runtimepath plus this repo removes the false "undefined global".
+-- lua_ls knows nothing about this config's own globals (vim, MiniIcons, ...). Pointing
+-- it at the runtimepath removes the false "undefined global" warnings.
 vim.lsp.config("lua_ls", {
   settings = {
     Lua = {
@@ -91,8 +88,14 @@ vim.lsp.config("lua_ls", {
   },
 })
 
--- Completion is built into 0.11+: no nvim-cmp, no blink.cmp, no snippet engine.
--- vim.snippet (also built in) expands LSP snippet items.
+-- Enable only servers whose binary actually exists. vim.lsp.enable() on a missing
+-- command throws on every matching buffer open.
+for name, binary in pairs(servers) do
+  if vim.fn.executable(binary) == 1 then
+    vim.lsp.enable(name)
+  end
+end
+
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
   callback = function(ev)
@@ -100,12 +103,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
     if not client then
       return
     end
-    if client:supports_method("textDocument/completion") then
-      vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+    -- basedpyright owns hover; ruff only lints/formats. Two hovers on one `K` is noise.
+    if client.name == "ruff" then
+      client.server_capabilities.hoverProvider = false
     end
     -- Colour swatches next to Color(0xFF...) in Dart and hex literals in CSS.
-    -- 0.12 signature: enable(enable, { bufnr, client_id }) — passing a bare buffer
-    -- number here fails validation.
+    -- 0.12 signature: enable(enable, { bufnr, client_id }).
     if client:supports_method("textDocument/documentColor") then
       vim.lsp.document_color.enable(true, { bufnr = ev.buf, client_id = client.id })
     end

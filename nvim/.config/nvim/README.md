@@ -1,74 +1,78 @@
-# Neovim config — minimal, built on 0.12
+# Neovim config — built on 0.12
 
-From-scratch config on Neovim's own plugin manager. No LazyVim, no lazy.nvim, no
-Mason: **8 plugins**, and the rest is built in.
+Neovim's own plugin manager (`vim.pack`), built-in LSP and tree-sitter. No lazy.nvim,
+no Mason. **9 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
+only where a plugin ships no entry point.
 
 ```
 init.lua
-lua/options.lua      leader, clipboard, UI, indentation
+lua/options.lua      leader, clipboard, UI, indentation, wrap off
 lua/plugins.lua      vim.pack.add(...) + per-plugin setup
-lua/lsp.lua          server list, completion, diagnostics, document colour
+lua/lsp.lua          server list, diagnostics, document colour, Kotlin JDK guard
 lua/treesitter.lua   parser list, per-buffer highlighting
 lua/format.lua       conform formatters per filetype
-lua/keymaps.lua      the tmux-mirrored keymap
+lua/keymaps.lua      entry points for fzf-lua, oil, conform, glow, sidekick
 nvim-pack-lock.json  committed — pins every plugin revision
 ```
 
 ## Plugins
 
-| Plugin | Why |
+| Plugin | Role |
 | --- | --- |
-| tokyonight.nvim | colourscheme |
-| mini.nvim | icons, statusline, pick, extra, files, clue, ai, pairs, surround, bufremove, move, misc |
-| nvim-lspconfig | server configs, consumed through `vim.lsp.config` / `vim.lsp.enable` |
-| nvim-treesitter (`main`) | highlighting and indentation |
-| gitsigns.nvim | hunks, blame, staging |
+| fzf-lua | find files, find in files, buffers, LSP symbols (needs `fzf`, `fd`, `rg`) |
+| oil.nvim | file explorer — edit the directory as a buffer |
+| blink.cmp | autocomplete (prebuilt Rust matcher) |
+| nvim-lspconfig | per-server defaults, used via `vim.lsp.config` / `vim.lsp.enable` |
+| nvim-treesitter (`main`) | highlighting + indentation (needs `tree-sitter` CLI and `gcc`) |
 | conform.nvim | format on save |
-| flutter-tools.nvim | run, hot reload, devices, outline, DevTools |
-| plenary.nvim | flutter-tools dependency |
+| render-markdown.nvim | markdown rendered in the buffer |
+| sidekick.nvim | CLI AI agents in a terminal split: claude, codex, opencode, pi, kiro-cli |
+| mini.icons | icons for the above, no devicons dependency |
 
-Replaced by built-ins: `blink.cmp` → `vim.lsp.completion`, `lualine`/`bufferline` →
-`mini.statusline`, `which-key` → `mini.clue`, `persistence` → `:mksession`,
-`nvim-lint` → LSP diagnostics.
+## Keys (Space is leader)
+
+| Keys | Action |
+| --- | --- |
+| `<leader>ff` `<leader><space>` | find files |
+| `<leader>/` `<leader>sg` | find in files (live grep) |
+| `<leader>,` `<leader>fr` `<leader>fg` | buffers / recent / git files |
+| `<leader>ss` `<leader>sS` | LSP symbols: buffer / workspace |
+| `<leader>sd` `<leader>sD` | diagnostics: buffer / workspace |
+| `<leader>e` `<leader>E` | oil: current file's dir / cwd (`g?` inside oil for its keys) |
+| `<leader>cf` | format |
+| `<leader>mp` / `<leader>mt` | markdown preview in glow / toggle in-buffer render |
+| `<leader>uw` | toggle word wrap (off by default) |
+| `<leader>aa` `as` `ad` `at` `af` `av` `ap` | sidekick: toggle, select, detach, send this/file/selection, prompt |
+| `<leader>ac` `ax` `ao` `ai` `ak` | sidekick: claude, codex, opencode, pi, kiro |
+| `<C-s>` | save |
+| `+` `-` | increment / decrement (tmux eats `<C-a>`) |
+
+LSP keys are Neovim 0.11+ built-ins (`K gd gr gI gy gra grn gO ]d [d`). Completion keys
+are blink's default preset (`<C-space> <C-n> <C-p> <C-y> <C-e> <C-k>`).
 
 ## Commands
 
 ```
 :lua vim.pack.get()                 list installed plugins
-:lua vim.pack.update()              update all
-:lua vim.pack.update({ 'mini.nvim' })
+:lua vim.pack.update()              update all (review the diff, then :w to confirm)
 :checkhealth lsp                    what is attached, what is missing
 ```
 
 ## Language servers are external binaries
 
-Nothing installs them for you. `lua/lsp.lua` enables a server only when its binary is
-on `PATH`, so a missing one is silent instead of an error on every buffer.
+Nothing installs them. `lua/lsp.lua` enables a server only when its binary is on `PATH`.
 
 | Language | Binary | Install |
 | --- | --- | --- |
-| Lua | `lua-language-server` | GitHub release → `~/.local/bin` |
-| TypeScript/JS | `vtsls` | `npm i -g @vtsls/language-server` |
-| Go | `gopls` | Go 1.27 at `~/.local/go`; `go install golang.org/x/tools/gopls@latest` → `~/go/bin` |
-| Python | `basedpyright-langserver` | `uv tool install basedpyright` |
-| Dart/Flutter | `dart` | already on PATH via the Flutter SDK |
-| Kotlin | `kotlin-language-server` | GitHub release; **needs JDK ≤ 21** at `~/.local/jdk` — Android Studio now bundles 25, which crashes it |
-| JSON/YAML | `vscode-json-language-server`, `yaml-language-server` | `npm i -g vscode-langservers-extracted yaml-language-server` |
-| Bash | `bash-language-server` | `npm i -g bash-language-server` |
-| Docker | `docker-langserver` | `npm i -g dockerfile-language-server-nodejs` |
+| Python | `basedpyright-langserver`, `ruff` | `npm i -g basedpyright`; `dnf install ruff` |
+| Go | `gopls` | `go install golang.org/x/tools/gopls@latest` |
+| JS/TS | `vtsls` | `npm i -g @vtsls/language-server typescript` |
+| HTML/CSS/JSON | `vscode-*-language-server` | `npm i -g vscode-langservers-extracted` |
+| YAML | `yaml-language-server` | `npm i -g yaml-language-server` |
+| Markdown | `marksman` | GitHub release → `~/.local/bin` |
+| Dart | `dart` | ships with the Flutter SDK |
+| Kotlin | `kotlin-language-server` | GitHub release; **needs JDK ≤ 21** — it crashes on 25 |
+| Lua | `lua-language-server` | `dnf` or GitHub release |
 
-Formatters for `conform.nvim` are external too: prettier, gofumpt, goimports, ruff,
-stylua, shfmt, dart. Missing ones are skipped silently.
-
-## Rollback
-
-The LazyVim setup is frozen in git:
-
-```
-git checkout nvim-lazyvim-final -- nvim     # config
-nvim +'Lazy restore'                        # plugin revisions from lazy-lock.json
-```
-
-A tarball of the same tree is in `~/nvim-backups/`, and the pre-rebuild plugin/tool
-data (lazy, mason, treesitter parsers) is in `~/nvim-backups/old-data-*/` — move those
-back into `~/.local/share/nvim/` if you want the old state back exactly.
+Formatters for conform are external too (prettier, gofumpt, goimports, ruff, stylua,
+shfmt, dart); missing ones are skipped silently.

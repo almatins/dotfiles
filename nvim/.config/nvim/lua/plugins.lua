@@ -27,6 +27,7 @@ vim.pack.add({
   -- The repo is called "nvim"; the explicit name is what `require("catppuccin")` expects.
   { src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
   { src = "https://github.com/nvim-mini/mini.icons" },
+  { src = "https://github.com/nvim-lualine/lualine.nvim" },
   { src = "https://github.com/ibhagwan/fzf-lua" },
   { src = "https://github.com/stevearc/oil.nvim" },
   -- 1.x tags ship a prebuilt Rust fuzzy matcher, so no Rust toolchain is needed.

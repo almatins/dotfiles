@@ -28,6 +28,7 @@ map("n", "<leader>wd", "<cmd>close<cr>", { desc = "Close window" })
 map("n", "<leader>uw", function()
   vim.wo.wrap = not vim.wo.wrap
   vim.notify("wrap " .. (vim.wo.wrap and "on" or "off"))
+  require("lualine").refresh() -- the statusline shows a "wrap" flag while it is on
 end, { desc = "Toggle word wrap" })
 
 -- Find (fzf-lua) --------------------------------------------------------------

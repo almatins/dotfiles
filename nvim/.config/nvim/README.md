@@ -1,7 +1,7 @@
 # Neovim config — built on 0.12
 
 Neovim's own plugin manager (`vim.pack`), built-in LSP and tree-sitter. No lazy.nvim,
-no Mason. **9 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
+no Mason. **10 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
 only where a plugin ships no entry point.
 
 ```
@@ -27,6 +27,7 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | conform.nvim | format on save |
 | render-markdown.nvim | markdown rendered in the buffer |
 | sidekick.nvim | CLI AI agents in a terminal split: claude, codex, opencode, pi, kiro-cli |
+| catppuccin (mocha) | colourscheme; auto-themes fzf-lua, blink, render-markdown, tree-sitter and LSP tokens |
 | mini.icons | icons for the above, no devicons dependency |
 
 ## Keys (Space is leader)
@@ -74,5 +75,17 @@ Nothing installs them. `lua/lsp.lua` enables a server only when its binary is on
 | Kotlin | `kotlin-language-server` | GitHub release; **needs JDK ≤ 21** — it crashes on 25 |
 | Lua | `lua-language-server` | `dnf` or GitHub release |
 
-Formatters for conform are external too (prettier, gofumpt, goimports, ruff, stylua,
-shfmt, dart); missing ones are skipped silently.
+## Formatters (conform, on save; `<leader>cf` on demand)
+
+| Files | Formatter | Indent |
+| --- | --- | --- |
+| Python | `ruff_format` + `ruff_organize_imports` | 4 spaces |
+| Go | `gofumpt` + `goimports` | tabs |
+| JS/TS, JSON, HTML, CSS, YAML, Markdown | `prettier` | 2 spaces |
+| Dart | `dart format` | 2 spaces |
+| Kotlin | `ktlint` (**not installed yet**) | 4 spaces |
+| Lua | `stylua` | 2 spaces |
+| Shell | `shfmt` | 2 spaces |
+
+A missing formatter is skipped silently. A project's `.editorconfig` and its own
+prettier/ruff/ktlint config override these defaults.

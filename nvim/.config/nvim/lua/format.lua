@@ -9,6 +9,7 @@
 --   go install golang.org/x/tools/cmd/goimports@latest
 --   dnf install ruff shfmt
 --   stylua      (GitHub release -> ~/.local/bin)
+--   ktlint      (GitHub release -> ~/.local/bin; needs a JVM)
 --   dart        (already on PATH via the Flutter SDK)
 
 require("conform").setup({
@@ -25,6 +26,7 @@ require("conform").setup({
     css = { "prettier" },
     html = { "prettier" },
     dart = { "dart_format" },
+    kotlin = { "ktlint" }, -- needs the ktlint binary; skipped silently until installed
     go = { "gofumpt", "goimports" },
     python = { "ruff_format", "ruff_organize_imports" },
     sh = { "shfmt" },

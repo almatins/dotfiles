@@ -42,6 +42,29 @@ opt.splitright = true
 opt.splitbelow = true
 opt.winborder = "rounded"
 
+-- Indentation per language. Neovim's built-in ftplugins set most of this; these win
+-- because they run after them. A project's .editorconfig overrides all of it (Neovim
+-- reads it natively), and so do prettier/ruff/ktlint configs at format time.
+--   2 spaces: web, data and Dart (prettier / dart format defaults)
+--   4 spaces: Python (ruff), Kotlin (ktlint)
+--   tabs:     Go (gofmt); tabstop is display width only
+local indent = {
+  { { "javascript", "typescript", "javascriptreact", "typescriptreact", "json", "jsonc", "html", "css", "yaml", "markdown", "lua", "dart", "sh", "bash" }, 2, true },
+  { { "python", "kotlin" }, 4, true },
+  { { "go", "gomod" }, 4, false },
+}
+for _, rule in ipairs(indent) do
+  local fts, width, spaces = rule[1], rule[2], rule[3]
+  vim.api.nvim_create_autocmd("FileType", {
+    group = vim.api.nvim_create_augroup("indent-" .. fts[1], { clear = true }),
+    pattern = fts,
+    callback = function(ev)
+      local bo = vim.bo[ev.buf]
+      bo.shiftwidth, bo.tabstop, bo.softtabstop, bo.expandtab = width, width, width, spaces
+    end,
+  })
+end
+
 -- System clipboard (wl-clipboard is installed, so this works under Wayland).
 opt.clipboard = "unnamedplus"
 

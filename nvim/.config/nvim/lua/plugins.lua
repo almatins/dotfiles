@@ -24,6 +24,8 @@ vim.api.nvim_create_autocmd("PackChanged", {
 })
 
 vim.pack.add({
+  -- The repo is called "nvim"; the explicit name is what `require("catppuccin")` expects.
+  { src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
   { src = "https://github.com/nvim-mini/mini.icons" },
   { src = "https://github.com/ibhagwan/fzf-lua" },
   { src = "https://github.com/stevearc/oil.nvim" },
@@ -37,6 +39,25 @@ vim.pack.add({
   { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
   { src = "https://github.com/folke/sidekick.nvim" },
 }, { confirm = false })
+
+-- Colourscheme ---------------------------------------------------------------
+-- auto_integrations (the default) themes fzf-lua, blink.cmp, render-markdown, etc.
+-- because they are installed; tree-sitter and LSP semantic-token groups are built in.
+-- Flavours: latte (light), frappe, macchiato, mocha (darkest).
+require("catppuccin").setup({
+  flavour = "mocha",
+  lsp_styles = {
+    -- Italic diagnostics text is hard to read at small sizes; keep the underlines.
+    virtual_text = {
+      errors = { "bold" },
+      hints = {},
+      warnings = {},
+      information = {},
+      ok = {},
+    },
+  },
+})
+vim.cmd.colorscheme("catppuccin")
 
 -- Icons ----------------------------------------------------------------------
 -- Tiny and dependency-free; lets oil, fzf-lua and render-markdown find icons without

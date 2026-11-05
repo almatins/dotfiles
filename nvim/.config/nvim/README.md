@@ -1,7 +1,7 @@
 # Neovim config — built on 0.12
 
 Neovim's own plugin manager (`vim.pack`), built-in LSP and tree-sitter. No lazy.nvim,
-no Mason. **10 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
+no Mason. **11 plugins.** Rule: every plugin keeps its default keymaps; custom keys exist
 only where a plugin ships no entry point.
 
 ```
@@ -28,6 +28,7 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | render-markdown.nvim | markdown rendered in the buffer |
 | sidekick.nvim | CLI AI agents in a terminal split: claude, codex, opencode, pi, kiro-cli |
 | catppuccin (mocha) | colourscheme; auto-themes fzf-lua, blink, render-markdown, tree-sitter and LSP tokens |
+| gitsigns.nvim | gutter signs, hunk stage/reset/preview, blame, diff (`lua/git.lua`) |
 | mini.icons | icons for the above, no devicons dependency |
 
 ## Keys (Space is leader)
@@ -43,6 +44,14 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | `<leader>cf` | format |
 | `<leader>mp` / `<leader>mt` | markdown preview in glow / toggle in-buffer render |
 | `<leader>uw` | toggle word wrap (off by default) |
+| `<leader>gg` | lazygit in a floating terminal |
+| `<leader>gs` `gc` `gl` `gb` `gS` | git pickers: status, commits, this file's log, branches, stash |
+| `]c` `[c` | next / previous hunk (gitsigns; Vim's own in diff windows) |
+| `<leader>hs` `hr` `hS` `hR` | stage / reset hunk (works on a visual selection), stage / reset buffer |
+| `<leader>hp` `hi` `hb` | preview hunk, preview inline, blame line |
+| `<leader>hd` `hD` `hq` `hQ` | diff vs index / vs last commit, hunks to quickfix (buffer / all) |
+| `<leader>tb` `tw` | toggle line blame / word diff |
+| `ih` (operator / visual) | hunk text object, e.g. `vih` |
 | `<leader>aa` `as` `ad` `at` `af` `av` `ap` | sidekick: toggle, select, detach, send this/file/selection, prompt |
 | `<leader>ac` `ax` `ao` `ai` `ak` | sidekick: claude, codex, opencode, pi, kiro |
 | `<C-s>` | save |

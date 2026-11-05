@@ -36,6 +36,7 @@ vim.pack.add({
   -- `main` is the rewrite for 0.11+; `master` is the unmaintained old branch.
   { src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
   { src = "https://github.com/stevearc/conform.nvim" },
+  { src = "https://github.com/lewis6991/gitsigns.nvim" },
   { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
   { src = "https://github.com/folke/sidekick.nvim" },
 }, { confirm = false })

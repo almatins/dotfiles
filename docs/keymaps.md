@@ -209,7 +209,7 @@ in `lua/git.lua`.
 | `<leader>aa` | Toggle the last-used agent |
 | `<leader>as` | Select an agent |
 | `<leader>ad` | Detach the session |
-| `<C-.>` | Focus the agent (normal, insert, visual, terminal). Needs a terminal that sends `Ctrl+.`. |
+| `<C-.>` | Focus the agent (normal, insert, visual, terminal). **Does not work inside tmux on Alacritty**, which cannot send `Ctrl+.` there (§3). Use `<leader>aa`. |
 | `<leader>ac` `ax` `ao` `ai` `ak` | claude, codex, opencode, pi, kiro |
 | `<leader>at` | Send "this" (normal, visual) |
 | `<leader>af` | Send the file |
@@ -302,7 +302,22 @@ The standard Vim motions and operators (`hjkl`, `w b e`, `d c y p`, `u <C-r>`, `
 
 ## 3. Inside tmux
 
-This document covers Alacritty and Neovim only. If you run Neovim inside tmux, tmux
-consumes `Ctrl+A` as its prefix, so Neovim never sees `<C-a>` (increment number). The tmux
-bindings are in `tmux/.tmux.conf`; `KEYMAP.md` in the repo root is an older reference that
-still describes the previous Neovim setup and is out of date for Neovim.
+This document covers Alacritty and Neovim only. The tmux bindings are in
+`tmux/.tmux.conf`; `KEYMAP.md` in the repo root is an older reference that still describes
+the previous Neovim setup and is out of date for Neovim.
+
+What tmux changes for Neovim and Claude Code (checked with `TERM=alacritty`, tmux 3.8):
+
+- **`Ctrl+A` is tmux's prefix**, and the only keyboard key tmux takes (its root key table
+  has no keyboard bindings). Neovim never sees `<C-a>` (increment number).
+- **Keys with a classic terminal encoding pass through intact:** `Shift+Down`,
+  `Shift+Tab`, `Ctrl+Arrow`, `F1`–`F12`, `Alt+key`. Everything in §2 works inside tmux
+  except the two below.
+- **`Shift+Enter` and `Ctrl+.` do not work inside tmux on Alacritty.** They have no
+  classic encoding. Alacritty only sends them after a program enables the kitty keyboard
+  protocol, and tmux cannot relay that request (it can only ask for xterm's
+  `modifyOtherKeys`, which Alacritty does not implement). Outside tmux they do work.
+  For `Shift+Enter` in Claude Code the usual fix is an Alacritty binding that sends
+  `ESC` `CR` on `Shift+Return`; that would be a new ➕ entry in §1 and is not set up.
+- **Cursor shape, truecolour, coloured undercurls and the OSC 52 clipboard** all reach
+  Alacritty through tmux with the current config.

@@ -55,8 +55,8 @@ keymaps don't work out.
 
 ## Environment this was built for
 
-- Fedora, Wayland, Ptyxis terminal
-- tmux 3.7b, Neovim 0.12.4
+- Fedora, Wayland, Alacritty 0.17 (`TERM=alacritty`)
+- tmux 3.8, Neovim 0.12.6
 - Caps Lock and Ctrl swapped at the X11/Wayland layer (`ctrl:swapcaps`)
 - Claude Code runs inside tmux, which is why `allow-passthrough` and `extended-keys`
   are set in `tmux.conf` — see the comments in that file.

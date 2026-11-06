@@ -3,12 +3,14 @@
 -- Neovim 0.11+ already binds the surface that matters, so none of it is remapped:
 --
 --     K       hover                 grn    rename
---     gd      definition            gra    code action
---     gr      references            gO     document symbols
---     gI      implementation        gD     declaration
---     gy      type definition       ]d [d  next/prev diagnostic
+--     <C-]>   definition (tagfunc)  gra    code action
+--     grr     references            gO     document symbols
+--     gri     implementation        grt    type definition
+--     ]d [d   next/prev diagnostic  <C-s>  signature help (insert mode)
 --
--- Insert-mode signature help is blink.cmp's default <C-k> (see plugins.lua).
+-- `gd` / `gD` are NOT LSP: they are Vim's own text search for a declaration in the current
+-- file. <C-]> is what follows the language server, because Neovim sets `tagfunc` to it.
+-- Insert-mode <C-k> is blink.cmp's signature help (see plugins.lua).
 
 -- Server name (as nvim-lspconfig knows it) -> the binary it needs on PATH.
 --

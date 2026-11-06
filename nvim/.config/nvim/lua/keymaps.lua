@@ -7,7 +7,7 @@
 -- Left alone on purpose, because the plugin or Neovim already binds them:
 --   blink.cmp  <C-space> <C-n> <C-p> <C-y> <C-e> <C-k>   (insert-mode completion)
 --   oil        g? (help) <CR> - <C-s> <C-h> <C-t> <C-p> <C-l> ...  (inside oil buffers)
---   LSP        K gd gr gI gy gra grn gO gD ]d [d          (Neovim 0.11+ built-ins)
+--   LSP        K grn gra grr gri grt gO ]d [d <C-]>       (Neovim 0.11+ built-ins)
 
 local map = vim.keymap.set
 

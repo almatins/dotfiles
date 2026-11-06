@@ -27,6 +27,7 @@ link() {
 link "bash/.bashrc"         ".bashrc"
 link "tmux/.tmux.conf"      ".tmux.conf"
 link "nvim/.config/nvim"    ".config/nvim"
+link "alacritty/.config/alacritty/alacritty.toml" ".config/alacritty/alacritty.toml"
 
 echo
 echo "Done."

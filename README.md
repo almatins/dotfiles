@@ -1,18 +1,22 @@
 # dotfiles
 
-Config files for tmux and Neovim, tracked in git and symlinked into place.
+Config files for tmux, Neovim and Alacritty, tracked in git and symlinked into place.
 
 ## Layout
 
 Directories are [GNU stow](https://www.gnu.org/software/stow/)-compatible, so if you
-ever `dnf install stow` you can use `stow tmux nvim` instead of `install.sh` with no
-changes to this repo.
+ever `dnf install stow` you can use `stow tmux nvim alacritty` instead of `install.sh`
+with no changes to this repo.
 
 ```
-bash/.bashrc             ->  ~/.bashrc
-tmux/.tmux.conf          ->  ~/.tmux.conf
-nvim/.config/nvim/       ->  ~/.config/nvim
+bash/.bashrc                             ->  ~/.bashrc
+tmux/.tmux.conf                          ->  ~/.tmux.conf
+nvim/.config/nvim/                       ->  ~/.config/nvim
+alacritty/.config/alacritty/alacritty.toml  ->  ~/.config/alacritty/alacritty.toml
 ```
+
+Only `alacritty.toml` is linked, not the whole `~/.config/alacritty/` directory, so
+anything else Alacritty or you put there stays out of the repo.
 
 `~/.bash_profile` is not tracked: it is unmodified Fedora boilerplate whose only job
 is to source `~/.bashrc`, which *is* tracked.

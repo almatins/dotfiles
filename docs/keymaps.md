@@ -17,8 +17,9 @@ built-in is marked ⚠️ even though the plugin set it.
 
 ## Verdict
 
-- **Alacritty: 0 changes.** `~/.config/alacritty/alacritty.toml` has no `[keyboard]` or
-  `[mouse]` section, so every key and mouse binding is Alacritty's default.
+- **Alacritty: 1 added key, 0 changed.** `alacritty.toml` binds `Shift+Enter` to `ESC CR`
+  (§1.1, marked ➕). Nothing else is rebound and there is no `[mouse]` section, so every
+  other key and mouse binding is Alacritty's default.
 - **Neovim: defaults are kept.** A clean `nvim --clean` has 101 default mappings. With this
   config loaded, 100 are unchanged and 1 differs (select-mode `<C-s>`, §2.1). No default was
   deleted.
@@ -33,10 +34,10 @@ or `<leader>sk` to search every mapping, or `<leader>?` for the current buffer's
 
 ---
 
-## 1. Alacritty — all ✅ default
+## 1. Alacritty — ✅ default, plus one ➕ added key
 
-Config: `~/.config/alacritty/alacritty.toml` (appearance only: font, colours, opacity,
-padding). It is not in this repo yet.
+Config: `alacritty/.config/alacritty/alacritty.toml` in this repo, symlinked to
+`~/.config/alacritty/alacritty.toml` (appearance, plus the one key binding below).
 
 ### 1.1 Everyday keys
 
@@ -54,6 +55,7 @@ padding). It is not in this repo yet.
 | `Shift+PageUp` / `Shift+PageDown` | Scroll history by a page | ✅ only on the main screen |
 | `Shift+Home` / `Shift+End` | Scroll to the top / bottom | ✅ only on the main screen |
 | `Ctrl+Shift+Space` | Toggle vi mode | ✅ |
+| `Shift+Enter` | Sends `ESC CR` (the bytes of `Alt+Enter`). Claude Code inserts a newline instead of submitting. By default Alacritty sends a plain Enter. | ➕ added |
 
 "Only on the main screen" means the key does nothing in programs that use the alternate
 screen (Neovim does), so Neovim receives `Shift+PageUp` and friends itself.
@@ -313,11 +315,13 @@ What tmux changes for Neovim and Claude Code (checked with `TERM=alacritty`, tmu
 - **Keys with a classic terminal encoding pass through intact:** `Shift+Down`,
   `Shift+Tab`, `Ctrl+Arrow`, `F1`–`F12`, `Alt+key`. Everything in §2 works inside tmux
   except the two below.
-- **`Shift+Enter` and `Ctrl+.` do not work inside tmux on Alacritty.** They have no
-  classic encoding. Alacritty only sends them after a program enables the kitty keyboard
-  protocol, and tmux cannot relay that request (it can only ask for xterm's
-  `modifyOtherKeys`, which Alacritty does not implement). Outside tmux they do work.
-  For `Shift+Enter` in Claude Code the usual fix is an Alacritty binding that sends
-  `ESC` `CR` on `Shift+Return`; that would be a new ➕ entry in §1 and is not set up.
+- **`Shift+Enter` and `Ctrl+.` have no classic encoding.** Alacritty only sends them
+  after a program enables the kitty keyboard protocol, and tmux cannot relay that request
+  (it can only ask for xterm's `modifyOtherKeys`, which Alacritty does not implement).
+  Outside tmux they work.
+  - `Shift+Enter` is handled by the Alacritty binding in §1.1, which sends `ESC CR`.
+    Tested in Claude Code inside tmux: `ESC CR` inserts a newline, a plain Enter submits.
+  - `Ctrl+.` has no equivalent, so sidekick's `<C-.>` does not work inside tmux.
+    Use `<leader>aa`.
 - **Cursor shape, truecolour, coloured undercurls and the OSC 52 clipboard** all reach
   Alacritty through tmux with the current config.

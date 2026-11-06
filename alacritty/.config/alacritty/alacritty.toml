@@ -9,6 +9,15 @@ bold = { family = "JetBrainsMono Nerd Font", style = "Bold" }
 italic = { family = "JetBrainsMono Nerd Font", style = "Italic" }
 bold_italic = { family = "JetBrainsMono Nerd Font", style = "Bold Italic" }
 
+# The only key binding changed from Alacritty's defaults.
+# Shift+Enter has no classic terminal encoding, and inside tmux Alacritty never gets to
+# use the kitty keyboard protocol, so programs see a plain Enter. Sending ESC CR (the
+# same bytes as Alt+Enter) makes Claude Code insert a newline instead of submitting.
+[[keyboard.bindings]]
+key = "Enter"
+mods = "Shift"
+chars = "\u001b\r"
+
 # Catppuccin Mocha
 [colors.primary]
 background = "#1e1e2e"

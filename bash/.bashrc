@@ -46,4 +46,23 @@ export PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"
 export ANDROID_HOME="$HOME/Android/Sdk"
 export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator"
 
+# Tunneling ESDM
+alias tunnel-dev='ssh -f -N -L 6443:172.16.23.32:6443 adm-cpww@172.16.23.32'
+alias tunnel-dev-stop='pkill -f "6443:172.16.23.32:6443"'
+
+# Frontend testing (needs tunnel-dev running first — kubectl port-forward
+# talks to the API server at 127.0.0.1:6443, which only tunnel-dev provides)
+alias frontend-forward='KUBECONFIG="$HOME/.kube/config" kubectl port-forward -n ingress-nginx svc/ingress-nginx-controller 8080:80 > /tmp/simpel-frontend-forward.log 2>&1 &'
+alias frontend-forward-stop='pkill -f "port-forward -n ingress-nginx svc/ingress-nginx-controller"'
+
+# Synergy service recovery
+alias synergy-fix='"$HOME/.local/bin/synergy-fix"'
+alias nv='NVIM_APPNAME=nvim-view nvim'
+
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path bash)"
+
+# opencode
+export PATH=/home/almatins/.opencode/bin:$PATH
+
+# Dart/Flutter global CLI tools
+export PATH="$PATH":"$HOME/.pub-cache/bin"

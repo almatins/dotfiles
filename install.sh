@@ -28,6 +28,7 @@ link "bash/.bashrc"         ".bashrc"
 link "tmux/.tmux.conf"      ".tmux.conf"
 link "nvim/.config/nvim"    ".config/nvim"
 link "alacritty/.config/alacritty/alacritty.toml" ".config/alacritty/alacritty.toml"
+link "nvim-view/.config/nvim-view" ".config/nvim-view"
 
 echo
 echo "Done."

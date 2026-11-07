@@ -75,8 +75,48 @@ MiniIcons.mock_nvim_web_devicons()
 -- Shells out to fzf, fd and ripgrep. Also takes over vim.ui.select, so code actions
 -- and other prompts use the same picker.
 local fzf = require("fzf-lua")
+
+-- fd already honours .gitignore, but fzf-lua runs it with --hidden, so caches and
+-- build output leak in (and get walked, which is slow). Excludes are globs matched
+-- at any depth, so a nested apps/*/node_modules is covered too. Inside the picker,
+-- <A-i> toggles --no-ignore and <A-h> toggles --hidden for the rare look inside.
+local fd_excludes = {
+  -- JS / TS
+  "node_modules",
+  "dist",
+  "build",
+  "coverage",
+  -- Dart / Flutter
+  ".pub_cache",
+  ".pub-cache",
+  ".dart_tool",
+  -- Python
+  ".venv",
+  "venv",
+  "__pycache__",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  -- other package-manager / framework caches
+  ".next",
+  ".nuxt",
+  ".svelte-kit",
+  ".turbo",
+  ".vite",
+  ".cache",
+  ".gradle",
+}
+-- Rebuild the default string rather than appending: fzf-lua replaces it wholesale.
+local fd_opts = { "--color=never", "--type", "f", "--type", "l", "--exclude", ".git", "--exclude", ".jj" }
+for _, dir in ipairs(fd_excludes) do
+  vim.list_extend(fd_opts, { "--exclude", dir })
+end
+
 fzf.setup({
-  files = { formatter = "path.filename_first" },
+  files = {
+    formatter = "path.filename_first",
+    fd_opts = table.concat(fd_opts, " "),
+  },
 })
 fzf.register_ui_select()
 

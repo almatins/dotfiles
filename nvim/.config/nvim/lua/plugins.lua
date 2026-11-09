@@ -153,6 +153,36 @@ require("sidekick").setup({
   nes = { enabled = false }, -- next-edit-suggestions needs Copilot; not used here
   cli = {
     picker = "fzf-lua", -- the default is snacks.nvim, which is not installed
+    win = {
+      layout = "right",
+      split = { width = 90 }, -- wide enough for code blocks without wrapping
+      -- Keep the split's width when other windows open/close. Manual resizes still work.
+      wo = { winfixwidth = true },
+      keys = {
+        -- sidekick's default hides the split on <C-.>. Use "blur" instead so the
+        -- split stays visible and <C-.> is a true two-way toggle with the global
+        -- cli("focus") map in keymaps.lua: from the agent it returns to the previous
+        -- window (wincmd p); from a buffer it focuses the agent.
+        hide_ctrl_dot = { "<c-.>", "blur", mode = "nt", desc = "Sidekick: back to editor" },
+        -- <C-f>/<C-b> send a picked file/buffer to the agent as context. Same idea for
+        -- grep, which fzf-lua exposes as live_grep.
+        grep = {
+          "<c-g>",
+          mode = "nt",
+          desc = "Sidekick: grep as context",
+          function(t)
+            vim.cmd.stopinsert()
+            vim.schedule(function()
+              require("sidekick.cli.picker").open("grep", { filter = { session = t.id } }, {
+                on_show = function()
+                  t.normal_mode = false
+                end,
+              })
+            end)
+          end,
+        },
+      },
+    },
     tools = {
       pi = { cmd = { "pi" } },
       kiro = { cmd = { "kiro-cli" } },

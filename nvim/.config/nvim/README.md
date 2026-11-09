@@ -63,6 +63,9 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | `ih` (operator / visual) | hunk text object, e.g. `vih` |
 | `<leader>aa` `as` `ad` `at` `af` `av` `ap` | sidekick: toggle, select, detach, send this/file/selection, prompt |
 | `<leader>ac` `ax` `ao` `ai` `ak` | sidekick: claude, codex, opencode, pi, kiro |
+| `<C-.>` | sidekick: focus the agent / back to the previous window (split stays open) |
+| `<C-z>` | sidekick: leave the agent for the previous window without hiding it |
+| `<C-f>` `<C-b>` `<C-g>` | inside the agent: pick files / buffers / grep as prompt context |
 | `<C-s>` | save (normal and visual mode; insert-mode `<C-s>` stays Neovim's signature help) |
 
 LSP keys are Neovim 0.11+ built-ins (`K grn gra grr gri grt gO ]d [d`, and `<C-]>` for

@@ -65,7 +65,8 @@ for _, rule in ipairs(indent) do
   })
 end
 
--- System clipboard (wl-clipboard is installed, so this works under Wayland).
+-- System clipboard. Neovim shells out to xclip/xsel on X11 and wl-copy on Wayland;
+-- both are installed here, so `+` works whichever session you are in.
 opt.clipboard = "unnamedplus"
 
 -- oil.nvim replaces netrw; keep netrw out of the way.

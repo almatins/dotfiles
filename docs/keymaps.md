@@ -171,6 +171,7 @@ All are on free keys: the leader namespace, or combinations with no stock meanin
 | `<leader>sr` | Resume the last search |
 | `<leader>e` | File explorer in the current file's directory (oil) |
 | `<leader>E` | File explorer in the working directory (oil) |
+| `<leader>yp` `<leader>yr` | Copy the buffer's absolute / working-directory-relative path |
 
 #### Code, markdown, window, UI
 

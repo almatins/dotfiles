@@ -53,6 +53,27 @@ map("n", "<leader>sk", fzf("keymaps"), { desc = "Search keymaps" })
 map("n", "<leader>sh", fzf("helptags"), { desc = "Search help" })
 map("n", "<leader>sr", fzf("resume"), { desc = "Resume last search" })
 
+-- Copy paths ------------------------------------------------------------------
+-- The `+` register is Neovim's system clipboard (options.lua). An unnamed buffer
+-- (a new, never-written file) has no path, so it warns instead of copying "".
+-- `:p` is always absolute; `:.` is relative to the working directory when the file
+-- lives under it, and absolute when it does not (there is no nicer option there).
+local function copy_path(mods)
+  return function()
+    local name = vim.api.nvim_buf_get_name(0)
+    if name == "" or vim.bo.buftype ~= "" then
+      vim.notify("no file path for this buffer", vim.log.levels.WARN)
+      return
+    end
+    local path = vim.fn.fnamemodify(name, mods)
+    vim.fn.setreg("+", path)
+    vim.notify("copied: " .. path)
+  end
+end
+
+map("n", "<leader>yp", copy_path(":p"), { desc = "Copy absolute path" })
+map("n", "<leader>yr", copy_path(":."), { desc = "Copy relative path" })
+
 -- File explorer (oil) ---------------------------------------------------------
 -- oil defines no global keymap. Opens the directory of the current file.
 map("n", "<leader>e", "<cmd>Oil<cr>", { desc = "File explorer" })

@@ -46,6 +46,7 @@ nvim-pack-lock.json  committed — pins every plugin revision
 | `<leader>ss` `<leader>sS` | LSP symbols: buffer / workspace |
 | `<leader>sd` `<leader>sD` | diagnostics: buffer / workspace |
 | `<leader>e` `<leader>E` | oil: current file's dir / cwd (`g?` inside oil for its keys) |
+| `<leader>yp` `<leader>yr` | copy the buffer's absolute / cwd-relative path |
 | `<leader>cf` | format |
 | `<leader>mp` / `<leader>mt` | markdown preview in glow / toggle in-buffer render. The preview follows the window's wrap setting: wrap off (default) chops long lines and scrolls sideways with Left / Right; `<leader>uw` first for wrapped output |
 | `<leader>?` | keymaps of the current buffer only (which-key) |

@@ -16,6 +16,7 @@ nvim/.config/nvim/                       ->  ~/.config/nvim
 alacritty/.config/alacritty/alacritty.toml  ->  ~/.config/alacritty/alacritty.toml
 i3/.config/i3/config                     ->  ~/.config/i3/config
 i3/.config/i3/lock.sh                    ->  ~/.config/i3/lock.sh
+i3/.config/i3/bar-workspaces.sh          ->  ~/.config/i3/bar-workspaces.sh
 i3/.local/bin/power-menu.sh              ->  ~/.local/bin/power-menu.sh
 i3/.local/bin/ai                         ->  ~/.local/bin/ai
 ghostty/.config/ghostty/config           ->  ~/.config/ghostty/config

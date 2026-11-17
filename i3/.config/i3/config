@@ -84,7 +84,7 @@ set $right semicolon
 floating_modifier Mod4
 
 # start a terminal
-bindsym Mod4+Return exec --no-startup-id alacritty
+bindsym Mod4+Return exec --no-startup-id ghostty
 
 # kill focused window
 bindsym Mod4+Shift+q kill
@@ -252,6 +252,7 @@ client.background       #FFFFFF
 bar {
   tray_output primary
   font pango:JetBrainsMono Nerd Font 10
+  workspace_command /home/almatins/.config/i3/bar-workspaces.sh
   colors {
     background #000000
     statusline #FFFFFF
@@ -290,7 +291,7 @@ bindsym Mod4+Shift+f exec --no-startup-id thunar
 bindsym Mod4+Shift+b exec --no-startup-id xarchiver
 
 # help: open this keymap
-bindsym Mod4+Shift+h exec --no-startup-id alacritty -e less ~/i3-keymaps.md
+bindsym Mod4+Shift+h exec --no-startup-id ghostty -e less ~/i3-keymaps.md
 
 # screenshots: Print = interactive, Mod4+Print = silent region capture
 bindsym Print exec --no-startup-id flameshot gui

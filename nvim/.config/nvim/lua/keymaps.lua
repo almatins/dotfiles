@@ -145,3 +145,16 @@ end, { desc = "Toggle CSV write lock" })
 map("n", "<leader>mm", function()
   require("mermaid").show()
 end, { desc = "Mermaid preview (ASCII)" })
+
+-- Copy the current file path ---------------------------------------------------
+-- clipboard=unnamedplus (options.lua) already routes yanks to the system clipboard;
+-- this is for handing an absolute path to a shell or another app.
+map("n", "<leader>yp", function()
+  local path = vim.fn.expand("%:p")
+  if path == "" then
+    vim.notify("buffer has no file path", vim.log.levels.WARN)
+    return
+  end
+  vim.fn.setreg("+", path)
+  vim.notify("Copied: " .. path)
+end, { desc = "Copy absolute file path" })

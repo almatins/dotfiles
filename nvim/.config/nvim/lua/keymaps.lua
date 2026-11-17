@@ -138,3 +138,10 @@ map("n", "<leader>cw", function()
   bo.readonly, bo.modifiable = not bo.readonly, not bo.modifiable
   vim.notify(bo.readonly and "csv: read-only" or "csv: editable")
 end, { desc = "Toggle CSV write lock" })
+
+-- Mermaid as ASCII ------------------------------------------------------------
+-- mermaid-ascii has no Neovim integration of its own. Source is the .mmd buffer, or
+-- the ```mermaid block under the cursor in markdown; output lands in a read-only split.
+map("n", "<leader>mm", function()
+  require("mermaid").show()
+end, { desc = "Mermaid preview (ASCII)" })

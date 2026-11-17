@@ -47,6 +47,13 @@ function M.source()
   end
 end
 
+-- mermaid-ascii paints classDef nodes with SGR escapes. A scratch buffer shows those
+-- literally (^[[38;2;255;0;0m), so strip them: the shape of the art is the point, and
+-- keeping the escape bytes would also break yanking the preview.
+local function strip_ansi(s)
+  return (s:gsub("\27%[[%d;]*m", ""))
+end
+
 function M.show()
   local src = M.source()
   if not src then
@@ -71,7 +78,7 @@ function M.show()
       end
 
       local buf = vim.api.nvim_create_buf(false, true)
-      vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split((out.stdout:gsub("\n$", "")), "\n"))
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(strip_ansi(out.stdout):gsub("\n$", ""), "\n"))
       vim.cmd("botright vnew")
       vim.api.nvim_win_set_buf(0, buf)
       vim.wo.wrap = false

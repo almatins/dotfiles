@@ -34,3 +34,16 @@ end, { desc = "Restore last session" })
 map("n", "<leader>qd", function()
   require("persistence").stop()
 end, { desc = "Don't save this session" })
+
+-- CSV/TSV tables --------------------------------------------------------------
+-- Neovim already detects both filetypes. csvview only draws virtual text, so the
+-- write lock costs nothing; <leader>cw in keymaps.lua unlocks a file for editing.
+vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("csv-view", { clear = true }),
+  pattern = { "csv", "tsv" },
+  callback = function(ev)
+    local bo = vim.bo[ev.buf]
+    bo.readonly, bo.modifiable = true, false
+    require("csvview").enable(ev.buf)
+  end,
+})

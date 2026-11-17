@@ -43,6 +43,8 @@ vim.pack.add({
   { src = "https://github.com/stevearc/conform.nvim" },
   { src = "https://github.com/lewis6991/gitsigns.nvim" },
   { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
+  -- CSV/TSV tables as virtual text. Display only: it ships no editing features.
+  { src = "https://github.com/hat0uma/csvview.nvim" },
   { src = "https://github.com/folke/sidekick.nvim" },
 }, { confirm = false })
 
@@ -103,6 +105,22 @@ require("blink.cmp").setup({
 -- `markdown` and `markdown_inline` tree-sitter parsers, installed in treesitter.lua.
 require("render-markdown").setup({
   file_types = { "markdown" },
+})
+
+-- CSV/TSV tables -------------------------------------------------------------
+-- Columns are padded with virtual text, so the buffer keeps the raw file: search,
+-- yank and :commands still see commas. Border mode draws "│" instead of recolouring
+-- the delimiter. The write lock and <leader>cv/<leader>cw live in editing.lua and
+-- keymaps.lua; csvview itself ships no keymaps.
+require("csvview").setup({
+  view = {
+    display_mode = "border",
+    min_column_width = 5,
+    spacing = { left = 1, right = 1 },
+    sticky_header = { enabled = true },
+  },
+  -- Plain exports rarely have multi-line fields; a small lookahead keeps parsing cheap.
+  parser = { comments = { "#" }, max_lookahead = 10 },
 })
 
 -- AI agents ------------------------------------------------------------------

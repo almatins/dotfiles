@@ -120,3 +120,21 @@ for key, name in pairs({ c = "claude", x = "codex", o = "opencode", i = "pi", k 
     desc = "Sidekick: " .. name,
   })
 end
+
+-- CSV tables (csvview) --------------------------------------------------------
+-- csvview ships no keymaps (it is command/API only). A CSV buffer opens with the
+-- table view and write lock already on -- see editing.lua -- so these back out.
+map("n", "<leader>cv", function()
+  local csv = require("csvview")
+  if csv.is_enabled(0) then
+    csv.disable(0)
+  else
+    csv.enable(0)
+  end
+end, { desc = "Toggle CSV table view" })
+
+map("n", "<leader>cw", function()
+  local bo = vim.bo
+  bo.readonly, bo.modifiable = not bo.readonly, not bo.modifiable
+  vim.notify(bo.readonly and "csv: read-only" or "csv: editable")
+end, { desc = "Toggle CSV write lock" })

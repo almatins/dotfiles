@@ -59,12 +59,27 @@ exec --no-startup-id xsettingsd
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec_always --no-startup-id nitrogen --restore
 
+# Synergy 3 GUI. Launched from here because this i3 session runs no XDG
+# autostart (dex is not installed), so ~/.config/autostart is ignored.
+# Wait for synergy-3.service to answer on 24802 first: if the GUI starts before
+# the unit's daemon, the GUI's embedded service binds @synergy-service-service
+# and the unit logs "existing service detected", exits 0, and is never retried.
+exec --no-startup-id sh -c 'for i in $(seq 1 30); do curl -sf -m1 -o /dev/null http://127.0.0.1:24802/ping && break; sleep 0.5; done; exec /opt/Synergy/synergy'
+
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# Volume keys: Mod4+= / Mod4+Shift+= up, Mod4+- down, Mod4+Shift+m mute
+# (scratchpad show moved to Mod4+[ to free Mod4+- for volume down)
+set $vol_step 5%
+bindsym Mod4+equal exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +$vol_step && $refresh_i3status
+bindsym Mod4+plus exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +$vol_step && $refresh_i3status
+bindsym Mod4+minus exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -$vol_step && $refresh_i3status
+bindsym Mod4+Shift+m exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
 
 # Use brightnessctl to adjust screen brightness
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl -s 5%+
@@ -158,7 +173,8 @@ bindsym Mod4+Shift+minus move scratchpad
 
 # Show the next scratchpad window or hide the focused scratchpad window.
 # If there are multiple scratchpad windows, this command cycles through them.
-bindsym Mod4+minus scratchpad show
+# Mod4+- is now volume down, so scratchpad show lives on Mod4+[.
+bindsym Mod4+bracketleft scratchpad show
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
@@ -196,6 +212,11 @@ bindsym Mod4+Shift+7 move container to workspace $ws7
 bindsym Mod4+Shift+8 move container to workspace $ws8
 bindsym Mod4+Shift+9 move container to workspace $ws9
 bindsym Mod4+Shift+0 move container to workspace $ws10
+
+# Default workspace at login: land on 0:misc (also the first bar button).
+# `exec` (not exec_always) so a reload/restart does not steal focus; the short
+# delay lets i3 finish its own startup focus handling first.
+exec --no-startup-id sh -c 'sleep 1; i3-msg workspace "0:misc"'
 
 # Synergy GUI always lives in the misc workspace
 assign [class="synergy"] "0:misc"
@@ -308,6 +329,8 @@ bindsym Mod4+Shift+p exec --no-startup-id dunstctl set-paused toggle
 # --- system: lock, sleep, power -----------------------------------------
 # Mod4+Shift+e (logout) already exists in the stock config above.
 bindsym Mod4+Escape exec --no-startup-id ~/.config/i3/lock.sh
-bindsym Mod4+Shift+Escape exec --no-startup-id ~/.local/bin/power-menu.sh
+# Power menu (rofi): lock, lock + screen off, sleep, logout, reboot, shutdown.
+# Logout/reboot/shutdown ask for confirmation inside the menu.
+bindsym Mod4+Shift+d exec --no-startup-id ~/.local/bin/power-menu.sh
 bindsym Mod4+Shift+s exec --no-startup-id systemctl suspend
 

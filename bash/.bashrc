@@ -46,4 +46,12 @@ export PATH="$PATH:/usr/local/go/bin:$HOME/go/bin"
 export ANDROID_HOME="$HOME/Android/Sdk"
 export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/emulator"
 
+# opencode CLI (installer puts the binary in ~/.opencode/bin)
+if [ -d "$HOME/.opencode/bin" ]; then
+    case ":$PATH:" in
+        *":$HOME/.opencode/bin:"*) ;;
+        *) export PATH="$HOME/.opencode/bin:$PATH" ;;
+    esac
+fi
+
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path bash)"

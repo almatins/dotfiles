@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# ai [slug] [agent] — run an AI coding agent in a project directory.
+#
+#   ai            pick a project with rofi, then start the agent
+#   ai mar        start the agent in ~/project/marirally_project
+#   ai mar2 claude
+#
+# Sets the terminal title to "ai:<slug>" (OSC 2) so the Ghostty tab and the
+# i3 titlebar always show which project that agent is working on.
+set -euo pipefail
+
+root="${PROJECTS:-$HOME/project}"
+agent_default="${AI_AGENT:-opencode}"
+
+slug="${1:-}"
+if [ -z "$slug" ]; then
+    slug=$(find "$root" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null |
+        sort |
+        rofi -dmenu -p "Proyek" -i) || exit 0
+    [ -n "$slug" ] || exit 0
+fi
+
+# short slugs used by the i3 workspace labels map to the real directory names
+case "$slug" in
+    mar) dir="$root/marirally_project" ;;
+    mar2) dir="$root/marirally" ;;
+    *) dir="$root/$slug" ;;
+esac
+
+if [ ! -d "$dir" ]; then
+    echo "ai: no such project directory: $dir" >&2
+    exit 1
+fi
+
+cd "$dir"
+printf '\033]2;ai:%s\007' "$slug"
+exec "${2:-$agent_default}"

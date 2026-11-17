@@ -1,0 +1,47 @@
+# Ghostty configuration
+# Migrated from ~/.config/alacritty/alacritty.toml (Catppuccin Mocha).
+# Format is `key = value`; inspect with `ghostty +show-config`.
+
+# --- Look: parity with the Alacritty setup ---
+theme = Catppuccin Mocha
+font-family = JetBrainsMono Nerd Font
+font-size = 12
+background-opacity = 0.95
+# KWin must have its Blur desktop effect enabled; it ignores the intensity value.
+background-blur = true
+window-padding-x = 8
+window-padding-y = 8
+window-padding-balance = true
+mouse-hide-while-typing = true
+cursor-style = block
+# Keep a block cursor at the prompt instead of shell integration forcing a bar.
+# Remove this line if you prefer the bar-at-prompt behaviour.
+shell-integration-features = no-cursor
+
+# --- Tabs: native KDE decoration, strip across the top ---
+window-decoration = auto
+gtk-tabs-location = top
+window-show-tab-bar = auto
+window-new-tab-position = end
+tab-inherit-working-directory = true
+
+# --- App behaviour ---
+gtk-single-instance = true
+# Scrollback left at the 50 MB default (ghostty >= 1.4 deprecates `scrollback-limit`;
+# its replacements are `scrollback-limit-bytes` / `scrollback-limit-lines`).
+notify-on-command-finish = unfocused
+notify-on-command-finish-after = 5s
+
+# --- Terminal tabs vs OpenCode session tabs ---
+# OpenCode binds session.tab.next/previous to ctrl+tab / ctrl+shift+tab. Ghostty
+# binds the same keys to terminal tabs and would consume them first, so unbind
+# both and leave terminal tabs on the defaults: ctrl+page_up/down and
+# ctrl+shift+arrow_left/right.
+keybind = ctrl+tab=unbind
+keybind = ctrl+shift+tab=unbind
+keybind = ctrl+shift+1=goto_tab:1
+keybind = ctrl+shift+2=goto_tab:2
+keybind = ctrl+shift+3=goto_tab:3
+keybind = ctrl+shift+4=goto_tab:4
+keybind = ctrl+shift+5=goto_tab:5
+keybind = ctrl+shift+6=goto_tab:6

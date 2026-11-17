@@ -31,6 +31,8 @@ link "alacritty/.config/alacritty/alacritty.toml" ".config/alacritty/alacritty.t
 link "i3/.config/i3/config" ".config/i3/config"
 link "i3/.config/i3/lock.sh" ".config/i3/lock.sh"
 link "i3/.local/bin/power-menu.sh" ".local/bin/power-menu.sh"
+link "i3/.local/bin/ai" ".local/bin/ai"
+link "ghostty/.config/ghostty/config" ".config/ghostty/config"
 link "i3status/.config/i3status/config" ".config/i3status/config"
 link "rofi/.config/rofi/config.rasi" ".config/rofi/config.rasi"
 link "dunst/.config/dunst/dunstrc" ".config/dunst/dunstrc"

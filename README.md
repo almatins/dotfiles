@@ -17,6 +17,8 @@ alacritty/.config/alacritty/alacritty.toml  ->  ~/.config/alacritty/alacritty.to
 i3/.config/i3/config                     ->  ~/.config/i3/config
 i3/.config/i3/lock.sh                    ->  ~/.config/i3/lock.sh
 i3/.local/bin/power-menu.sh              ->  ~/.local/bin/power-menu.sh
+i3/.local/bin/ai                         ->  ~/.local/bin/ai
+ghostty/.config/ghostty/config           ->  ~/.config/ghostty/config
 i3status/.config/i3status/config         ->  ~/.config/i3status/config
 rofi/.config/rofi/config.rasi            ->  ~/.config/rofi/config.rasi
 dunst/.config/dunst/dunstrc              ->  ~/.config/dunst/dunstrc

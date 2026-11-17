@@ -164,14 +164,14 @@ bindsym Mod4+minus scratchpad show
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1:oc"
 set $ws2 "2:nvim"
-set $ws3 "3:ff"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9:syn3"
-set $ws10 "10"
+set $ws3 "3:web"
+set $ws4 "4:term"
+set $ws5 "5:mob"
+set $ws6 "6:mar"
+set $ws7 "7:mar2"
+set $ws8 "8:p3"
+set $ws9 "9:p4"
+set $ws10 "0:misc"
 
 # switch to workspace
 bindsym Mod4+1 workspace $ws1
@@ -196,6 +196,12 @@ bindsym Mod4+Shift+7 move container to workspace $ws7
 bindsym Mod4+Shift+8 move container to workspace $ws8
 bindsym Mod4+Shift+9 move container to workspace $ws9
 bindsym Mod4+Shift+0 move container to workspace $ws10
+
+# Synergy GUI always lives in the misc workspace
+assign [class="synergy"] "0:misc"
+
+# start an AI agent in its project dir; no argument opens a rofi picker
+bindsym Mod4+Shift+Return exec --no-startup-id ghostty -e "$HOME/.local/bin/ai"
 
 # reload the configuration file
 bindsym Mod4+Shift+c reload

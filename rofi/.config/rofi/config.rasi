@@ -1,0 +1,20 @@
+/* rofi configuration — rofi 2.0.0 */
+configuration {
+    modi: "drun,run,window";
+    show-icons: true;
+    icon-theme: "Papirus";
+    font: "JetBrainsMono Nerd Font 11";
+    terminal: "alacritty";
+
+    drun-display-format: "{name}";
+    display-drun: "Aplikasi";
+    display-run: "Perintah";
+    display-window: "Jendela";
+
+    drun-sort: true;
+    sorting-method: "fzf";
+}
+
+/* Tema bawaan rofi-themes. Ganti nama ini untuk mencoba tema lain:
+   Arc-Dark, Adapta-Nokto, Monokai, Paper, DarkBlue, Indego */
+@theme "Arc-Dark"

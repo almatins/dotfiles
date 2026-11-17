@@ -1,0 +1,75 @@
+# dunst configuration — generated 2026-11-16
+# Gaya mengikuti tema Breeze yang sudah dipakai aplikasi GTK di mesin ini.
+
+[global]
+    monitor = 0
+    follow = mouse
+    width = 340
+    height = (300, 300)
+    origin = top-right
+    offset = (12, 52)
+    scale = 0
+    notification_limit = 20
+
+    progress_bar = true
+    progress_bar_height = 8
+    progress_bar_frame_width = 1
+    progress_bar_min_width = 150
+    progress_bar_max_width = 300
+
+    transparency = 0
+    frame_width = 2
+    frame_color = "#3C6EB4"
+    gap_size = 6
+    separator_color = frame
+    corner_radius = 8
+
+    sort = yes
+    font = JetBrainsMono Nerd Font 10
+    markup = full
+    format = "<b>%s</b>\n%b"
+    alignment = left
+    vertical_alignment = center
+    show_age_threshold = 60
+    ellipsize = middle
+    ignore_newline = no
+    stack_duplicates = true
+    hide_duplicate_count = false
+    show_indicators = yes
+
+    icon_position = left
+    min_icon_size = 16
+    max_icon_size = 48
+    icon_path = /usr/share/icons/Adwaita/48x48/status:/usr/share/icons/Adwaita/48x48/devices:/usr/share/icons/Adwaita/48x48/apps
+
+    sticky_history = yes
+    history_length = 30
+
+    dmenu = /usr/bin/rofi -dmenu -p "Notifikasi:"
+    browser = /usr/bin/xdg-open
+    always_run_script = true
+    title = Dunst
+    class = Dunst
+    ignore_dbusclose = false
+
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current
+    mouse_right_click = close_all
+
+[urgency_low]
+    background = "#1A1A1A"
+    foreground = "#BDBDBD"
+    frame_color = "#4C4C4C"
+    timeout = 5
+
+[urgency_normal]
+    background = "#222222"
+    foreground = "#FFFFFF"
+    frame_color = "#3C6EB4"
+    timeout = 10
+
+[urgency_critical]
+    background = "#2B1113"
+    foreground = "#FFFFFF"
+    frame_color = "#EF2929"
+    timeout = 0

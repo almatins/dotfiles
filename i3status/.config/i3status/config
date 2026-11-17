@@ -1,0 +1,84 @@
+# i3status configuration — generated 2026-11-16
+# Interface Wi-Fi terdeteksi: wlp0s20f3
+
+general {
+        colors = true
+        interval = 5
+        color_good = "#8AE234"
+        color_degraded = "#FCE94F"
+        color_bad = "#EF2929"
+}
+
+order += "memory"
+order += "cpu_usage"
+order += "volume master"
+order += "battery all"
+order += "wireless _first_"
+order += "ethernet _first_"
+order += "path_exists VPN"
+order += "run_watch Docker"
+order += "tztime local"
+
+# RAM terpakai; kuning di bawah 15% tersedia, merah di bawah 8%.
+memory {
+        format = "RAM %percentage_used"
+        threshold_degraded = "15%"
+        threshold_critical = "8%"
+}
+
+# Beban CPU rata-rata sejak interval terakhir.
+cpu_usage {
+        format = "CPU %usage"
+        max_threshold = 90
+        degraded_threshold = 75
+}
+
+# Volume sink default (PulseAudio on PipeWire).
+volume master {
+        format = "VOL %volume"
+        format_muted = "VOL mute"
+        device = "default"
+        mixer = "Master"
+        mixer_idx = 0
+}
+
+battery all {
+        format = "%status %percentage %remaining"
+        format_down = "Tanpa baterai"
+        status_chr = "CHR"
+        status_bat = "BAT"
+        status_full = "FULL"
+        low_threshold = 20
+        threshold_type = percentage
+}
+
+# Tampil hanya saat tersambung; SSID tidak ditampilkan.
+wireless _first_ {
+        format_up = "WIFI %quality"
+        format_down = ""
+        format_quality = "%d%s"
+}
+
+# Tampil hanya saat kabel tersambung.
+ethernet _first_ {
+        format_up = "LAN %speed"
+        format_down = ""
+}
+
+# Muncul hanya kalau tunnel VPN (tun0) aktif.
+path_exists VPN {
+        format = "%title"
+        format_down = ""
+        path = "/proc/sys/net/ipv4/conf/tun0"
+}
+
+# Muncul hanya kalau dockerd berjalan (/run/docker.pid valid).
+run_watch Docker {
+        format = "%title"
+        format_down = ""
+        pidfile = "/run/docker.pid"
+}
+
+tztime local {
+        format = "%a %d %b  %H:%M"
+}

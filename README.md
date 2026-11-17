@@ -1,22 +1,35 @@
 # dotfiles
 
-Config files for tmux, Neovim and Alacritty, tracked in git and symlinked into place.
+Config files for tmux, Neovim, Alacritty and the i3 desktop stack (i3, i3status,
+rofi, dunst, GTK/xsettingsd fonts), tracked in git and symlinked into place.
 
 ## Layout
 
 Directories are [GNU stow](https://www.gnu.org/software/stow/)-compatible, so if you
-ever `dnf install stow` you can use `stow tmux nvim alacritty` instead of `install.sh`
-with no changes to this repo.
+ever `dnf install stow` you can use `stow tmux nvim alacritty i3 i3status rofi dunst gtk xsettingsd`
+instead of `install.sh` with no changes to this repo.
 
 ```
 bash/.bashrc                             ->  ~/.bashrc
 tmux/.tmux.conf                          ->  ~/.tmux.conf
 nvim/.config/nvim/                       ->  ~/.config/nvim
 alacritty/.config/alacritty/alacritty.toml  ->  ~/.config/alacritty/alacritty.toml
+i3/.config/i3/config                     ->  ~/.config/i3/config
+i3/.config/i3/lock.sh                    ->  ~/.config/i3/lock.sh
+i3/.local/bin/power-menu.sh              ->  ~/.local/bin/power-menu.sh
+i3status/.config/i3status/config         ->  ~/.config/i3status/config
+rofi/.config/rofi/config.rasi            ->  ~/.config/rofi/config.rasi
+dunst/.config/dunst/dunstrc              ->  ~/.config/dunst/dunstrc
+gtk/.config/gtk-3.0/settings.ini         ->  ~/.config/gtk-3.0/settings.ini
+gtk/.config/gtk-4.0/settings.ini         ->  ~/.config/gtk-4.0/settings.ini
+gtk/.gtkrc-2.0                           ->  ~/.gtkrc-2.0
+xsettingsd/.config/xsettingsd/xsettingsd.conf  ->  ~/.config/xsettingsd/xsettingsd.conf
 ```
 
-Only `alacritty.toml` is linked, not the whole `~/.config/alacritty/` directory, so
-anything else Alacritty or you put there stays out of the repo.
+Only individual files are linked (never whole `~/.config/*` directories), so backups,
+per-app state and anything else you drop in those directories stay out of the repo.
+The desktop files all use `JetBrainsMono Nerd Font`; bar/title fonts only apply after
+`i3-msg restart` (a plain reload does not respawn `i3bar`).
 
 `~/.bash_profile` is not tracked: it is unmodified Fedora boilerplate whose only job
 is to source `~/.bashrc`, which *is* tracked.

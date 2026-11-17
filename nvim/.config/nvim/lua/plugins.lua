@@ -111,7 +111,8 @@ require("render-markdown").setup({
 -- Columns are padded with virtual text, so the buffer keeps the raw file: search,
 -- yank and :commands still see commas. Border mode draws "│" instead of recolouring
 -- the delimiter. The write lock and <leader>cv/<leader>cw live in editing.lua and
--- keymaps.lua; csvview itself ships no keymaps.
+-- keymaps.lua. csvview ships no global keymaps, but its nav keys are buffer-local and
+-- only exist while the table view is on, so <Tab>/<S-Tab> stay stock elsewhere.
 require("csvview").setup({
   view = {
     display_mode = "border",
@@ -121,6 +122,13 @@ require("csvview").setup({
   },
   -- Plain exports rarely have multi-line fields; a small lookahead keeps parsing cheap.
   parser = { comments = { "#" }, max_lookahead = 10 },
+  keymaps = {
+    -- Excel-style: <Tab> left-to-right, <S-Tab> back. The *_field_start actions put
+    -- the cursor at the first character of the neighbouring field, like w/b, instead
+    -- of at its last character (which the *_field_end actions would do).
+    jump_next_field_start = { "<Tab>", mode = { "n", "v" } },
+    jump_prev_field_start = { "<S-Tab>", mode = { "n", "v" } },
+  },
 })
 
 -- AI agents ------------------------------------------------------------------

@@ -49,6 +49,7 @@ link "gtk/.config/gtk-3.0/settings.ini" ".config/gtk-3.0/settings.ini"
 link "gtk/.config/gtk-4.0/settings.ini" ".config/gtk-4.0/settings.ini"
 link "gtk/.gtkrc-2.0"       ".gtkrc-2.0"
 link "xsettingsd/.config/xsettingsd/xsettingsd.conf" ".config/xsettingsd/xsettingsd.conf"
+link "systemd/.config/systemd/user/gpa.service.d/override.conf" ".config/systemd/user/gpa.service.d/override.conf"
 
 echo
 echo "Done."

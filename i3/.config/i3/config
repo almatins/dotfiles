@@ -275,7 +275,7 @@ exec --no-startup-id sh -c 'sleep 1; i3-msg workspace "0:misc"'
 assign [class="synergy"] "0:misc"
 
 # start an AI agent in its project dir; no argument opens a rofi picker
-bindsym Mod4+Shift+Return exec --no-startup-id alacritty -e "$HOME/.local/bin/ai"
+bindsym Mod4+Shift+Return exec --no-startup-id alacritty -e "$HOME/.local/bin/tmux-ws" ai
 
 # reload the configuration file
 bindsym Mod4+Shift+c reload

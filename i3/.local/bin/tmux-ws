@@ -25,4 +25,14 @@ case "$name" in
 esac
 [ -d "$dir" ] || dir="$HOME"
 
+# With a command argument, open a new window in the workspace session and
+# attach it (used by Mod4+Shift+Return for the AI agent).
+if [ "$#" -gt 0 ]; then
+    if tmux has-session -t "$name" 2>/dev/null; then
+        tmux new-window -t "$name" -n ai -c "$dir" "$@"
+        exec tmux attach -t "$name"
+    fi
+    exec tmux new-session -s "$name" -n ai -c "$dir" "$@"
+fi
+
 exec tmux new -A -s "$name" -c "$dir"

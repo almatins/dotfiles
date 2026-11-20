@@ -1,22 +1,55 @@
 #!/usr/bin/env bash
-# Menu daya i3 — dipanggil dari pintasan Mod1+Shift+Escape.
-# Dibuat 2026-11-16.
+# Power menu for i3 — bound to Mod4+Shift+Escape (see ~/.config/i3/config).
+#
+# rofi in dmenu mode, inheriting ~/.config/rofi/theme.rasi.
+# Destructive entries (logout, reboot, poweroff) ask for confirmation first, since
+# Mod4+Shift+Escape sits right next to Mod4+Escape (lock) on the keyboard.
 set -uo pipefail
 
-pilihan=$(printf '%s\n' \
-  "Kunci layar" \
-  "Tidur" \
-  "Keluar sesi" \
-  "Nyalakan ulang" \
-  "Matikan" \
-  | rofi -dmenu -i -p "Menu daya" -lines 5 -width 32 -no-custom -theme Arc-Dark -theme-str 'window { width: 460px; height: 320px; } * { font: "JetBrainsMono Nerd Font 11"; }') || exit 0
+LOCK="  Kunci layar"
+LOCK_OFF="  Kunci + matikan layar"
+SLEEP="  Tidur"
+LOGOUT="  Keluar sesi"
+REBOOT="  Nyalakan ulang"
+POWEROFF="  Matikan"
 
-[ -z "${pilihan:-}" ] && exit 0
+menu() {  # $1 = prompt, $2 = window height in px (confirmation needs less)
+    local prompt=$1 height=${2:-380}
+    rofi -dmenu -i -p "$prompt" -no-custom \
+        -theme-str "window { width: 480px; height: ${height}px; } prompt { enabled: true; } entry { placeholder: \"\"; }"
+}
 
-case "$pilihan" in
-  "Kunci layar")    "$HOME/.config/i3/lock.sh" ;;
-  "Tidur")          systemctl suspend ;;
-  "Keluar sesi")    i3-msg exit ;;
-  "Nyalakan ulang") systemctl reboot ;;
-  "Matikan")        systemctl poweroff ;;
+confirm() {  # $1 = question; "Tidak" is preselected, so Enter alone is safe
+    local answer
+    answer=$(printf 'Tidak\nYa\n' | menu "$1" 190) || return 1
+    [ "$answer" = "Ya" ]
+}
+
+choice=$(printf '%s\n' "$LOCK" "$LOCK_OFF" "$SLEEP" "$LOGOUT" "$REBOOT" "$POWEROFF" \
+    | menu "Menu daya") || exit 0
+[ -z "${choice:-}" ] && exit 0
+
+case "$choice" in
+    "$LOCK")
+        exec "$HOME/.config/i3/lock.sh"
+        ;;
+    "$LOCK_OFF")
+        # Lock in the background, power the panel down, then stay until unlock.
+        "$HOME/.config/i3/lock.sh" &
+        sleep 0.5
+        xset dpms force off
+        wait
+        ;;
+    "$SLEEP")
+        systemctl suspend
+        ;;
+    "$LOGOUT")
+        confirm "Keluar dari sesi ini?" && i3-msg exit
+        ;;
+    "$REBOOT")
+        confirm "Nyalakan ulang komputer?" && systemctl reboot
+        ;;
+    "$POWEROFF")
+        confirm "Matikan komputer?" && systemctl poweroff
+        ;;
 esac

@@ -1,10 +1,11 @@
-/* rofi configuration — rofi 2.0.0 */
+/* rofi configuration — Catppuccin Mocha (Hyprland-like) */
+
 configuration {
     modi: "drun,run,window";
     show-icons: true;
     icon-theme: "Papirus";
     font: "JetBrainsMono Nerd Font 11";
-    terminal: "alacritty";
+    terminal: "ghostty";
 
     drun-display-format: "{name}";
     display-drun: "Aplikasi";
@@ -15,6 +16,5 @@ configuration {
     sorting-method: "fzf";
 }
 
-/* Tema bawaan rofi-themes. Ganti nama ini untuk mencoba tema lain:
-   Arc-Dark, Adapta-Nokto, Monokai, Paper, DarkBlue, Indego */
-@theme "Arc-Dark"
+/* Visual style lives in theme.rasi: border, radii, paddings, selection. */
+@theme "theme"

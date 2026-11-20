@@ -24,6 +24,7 @@ i3/.local/bin/ai                         ->  ~/.local/bin/ai
 ghostty/.config/ghostty/config           ->  ~/.config/ghostty/config
 i3status/.config/i3status/config         ->  ~/.config/i3status/config
 rofi/.config/rofi/config.rasi            ->  ~/.config/rofi/config.rasi
+rofi/.config/rofi/theme.rasi             ->  ~/.config/rofi/theme.rasi
 dunst/.config/dunst/dunstrc              ->  ~/.config/dunst/dunstrc
 gtk/.config/gtk-3.0/settings.ini         ->  ~/.config/gtk-3.0/settings.ini
 gtk/.config/gtk-4.0/settings.ini         ->  ~/.config/gtk-4.0/settings.ini

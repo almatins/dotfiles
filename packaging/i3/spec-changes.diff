@@ -5,22 +5,26 @@
  Name:           i3
  Version:        4.25.1
 -Release:        %autorelease
-+Release:        1.fc44.tab1
++Release:        1.fc44.tab2
  Summary:        Improved tiling window manager
  License:        BSD-3-Clause
  URL:            https://i3wm.org
-@@ -22,6 +22,7 @@
+@@ -22,6 +22,8 @@
  Source4:        fedora-i3-config
  Source5:        fedora-i3-keycodes
  Patch0:         0001-Correct-dex-binary-name-dex-dex-autostart.patch
 +Patch1:         0002-hide-tab-strip.patch
++Patch2:         0003-no-strip-keep-border.patch
  
  # i3-gaps was merged into i3 with 4.22
  Provides:       i3-gaps = %{version}-%{release}
-@@ -222,6 +223,9 @@
+@@ -222,6 +224,12 @@
  %{_includedir}/%{name}/
  
  %changelog
++* Fri Nov 20 2026 Almatins <webmaster@almatins.com> - 4.25.1-1.fc44.tab2
++- Local patch: keep the real border style for stacked/tabbed children
++
 +* Fri Nov 20 2026 Almatins <webmaster@almatins.com> - 4.25.1-1.fc44.tab1
 +- Local patch: hide the tab/stack strip for stacked/tabbed containers
 +

@@ -16,13 +16,17 @@ layouts and everything else are unchanged.
 
 ## Files here
 
-- `0002-hide-tab-strip.patch` — the 7-line source patch (against 4.25.1)
-- `spec-changes.diff` — the spec edits: `Patch1:`, `Release: 1.fc44.tab1`,
-  changelog entry
+- `0002-hide-tab-strip.patch` — zeroes the decoration height for stacked/tabbed
+  (`render_con()` in `src/render.c`)
+- `0003-no-strip-keep-border.patch` — stops `con_border_style()` from forcing
+  `BS_NORMAL` on children of a multi-child stack; without it the top border
+  disappears (normal borders expect a titlebar area)
+- `spec-changes.diff` — the spec edits: `Patch1:`/`Patch2:`,
+  `Release: 1.fc44.tab2`, changelog entries
 
 ## State on this machine
 
-- `i3-4.25.1-1.fc44.tab1` and `i3-config-4.25.1-1.fc44.tab1` installed from
+- `i3-4.25.1-1.fc44.tab2` and `i3-config-4.25.1-1.fc44.tab2` installed from
   `~/rpmbuild/RPMS/` (unsigned, local)
 - versionlocked, so `dnf update` will not silently replace the patched build:
   `sudo dnf versionlock delete i3 i3-config` to release the lock
@@ -40,14 +44,15 @@ rpm -i --replacepkgs i3-4.25.1-1.fc44.src.rpm
 sudo dnf builddep -y ~/rpmbuild/SPECS/i3.spec
 
 # every build: patch the spec and add the source patch
-cp packaging/i3/0002-hide-tab-strip.patch ~/rpmbuild/SOURCES/
+cp packaging/i3/0002-hide-tab-strip.patch packaging/i3/0003-no-strip-keep-border.patch \
+  ~/rpmbuild/SOURCES/
 patch -p1 -d ~/rpmbuild/SPECS < packaging/i3/spec-changes.diff
 rpmbuild -ba ~/rpmbuild/SPECS/i3.spec
 
 # install (config package must match i3's release)
 sudo dnf install -y \
-  ~/rpmbuild/RPMS/x86_64/i3-4.25.1-1.fc44.tab1.x86_64.rpm \
-  ~/rpmbuild/RPMS/noarch/i3-config-4.25.1-1.fc44.tab1.noarch.rpm
+  ~/rpmbuild/RPMS/x86_64/i3-4.25.1-1.fc44.tab2.x86_64.rpm \
+  ~/rpmbuild/RPMS/noarch/i3-config-4.25.1-1.fc44.tab2.noarch.rpm
 sudo dnf versionlock add i3 i3-config
 
 i3-msg restart
@@ -57,12 +62,14 @@ i3-msg restart
 
 1. `sudo dnf versionlock delete i3 i3-config`
 2. Fetch the new SRPM (change the version paths above), bump the release suffix
-   in the spec (`tab1` → `tab2`) so the local build sorts newer.
-3. Re-apply `spec-changes.diff` and the patch. The hunk sits on
-   `params.deco_height = render_deco_height();` in `render_con()`; if upstream
-   moved it, re-create the patch with `diff -u --label a/src/render.c
-   --label b/src/render.c` from a pristine tree.
+   in the spec (`tab2` → `tab3`) so the local build sorts newer.
+3. Re-apply `spec-changes.diff` and both patches. The hunks sit on
+   `params.deco_height = render_deco_height();` in `render_con()` and on the
+   `L_STACKED`/`L_TABBED` branches of `con_border_style()`; if upstream moved
+   them, re-create the patches with `diff -u --label a/src/<file>
+   --label b/src/<file>` from a pristine tree.
 4. Rebuild, install, versionlock again.
 
 Verified: nested `Xephyr :99` run and a live `stacked` container both report
-`deco_rect.height == 0`, and windows use the full height under the bar.
+`deco_rect.height == 0`, the windows use the full height under the bar, and
+with the second patch `window_rect.y == 2` with a 2 px border on all sides.

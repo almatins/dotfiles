@@ -31,6 +31,7 @@ link "alacritty/.config/alacritty/alacritty.toml" ".config/alacritty/alacritty.t
 link "i3/.config/i3/config" ".config/i3/config"
 link "i3/.config/i3/lock.sh" ".config/i3/lock.sh"
 link "i3/.config/i3/bar-workspaces.sh" ".config/i3/bar-workspaces.sh"
+link "polybar/.config/polybar" ".config/polybar"
 link "i3/.local/bin/power-menu.sh" ".local/bin/power-menu.sh"
 link "i3/.local/bin/ai" ".local/bin/ai"
 link "ghostty/.config/ghostty/config" ".config/ghostty/config"

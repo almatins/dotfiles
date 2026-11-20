@@ -22,7 +22,7 @@
     frame_color = "#cba6f7"
     gap_size = 6
     separator_color = frame
-    corner_radius = 8
+    corner_radius = 0
 
     sort = yes
     font = JetBrainsMono Nerd Font 10

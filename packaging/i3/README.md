@@ -66,10 +66,10 @@ Fedora 44 (adjust `DISTREL` for other releases):
 ```bash
 # packaging tools
 sudo dnf install -y rpm-build rpmdevtools curl patch
-
-# i3 build dependencies (after the SRPM is unpacked, see build.sh)
-sudo dnf builddep -y ~/rpmbuild/SPECS/i3.spec
 ```
+
+The i3 build dependencies are installed automatically by
+`./build.sh --deps` on the first run.
 
 `builddep` pulls gcc/meson, the xcb/xkbcommon/cairo/pango/yajl/libev
 development packages, asciidoc/xmlto and the Perl test modules.
@@ -80,7 +80,9 @@ development packages, asciidoc/xmlto and the Perl test modules.
 
 ```bash
 cd ~/dotfiles/packaging/i3
-./build.sh                 # VERSION=4.25.1 DISTREL=1.fc44 TAB=2
+./build.sh --deps          # first time: also installs BuildRequires (sudo)
+./build.sh                 # later builds
+# VERSION=4.25.1 DISTREL=1.fc44 TAB=2 by default
 ```
 
 The script:
@@ -88,10 +90,11 @@ The script:
 1. downloads `i3-4.25.1-1.fc44.src.rpm` from
    `https://kojipkgs.fedoraproject.org/packages/i3/4.25.1/1.fc44/src/`,
 2. installs it into `~/rpmbuild` with `rpm -i --replacepkgs` (always fresh),
-3. copies both patches into `~/rpmbuild/SOURCES/`,
-4. applies `spec-changes.diff` to the spec and sets
+3. with `--deps`, runs `sudo dnf builddep -y` on the spec,
+4. copies both patches into `~/rpmbuild/SOURCES/`,
+5. applies `spec-changes.diff` to the spec and sets
    `Release: 1.fc44.tab2`,
-5. runs `rpmbuild -ba` and prints the resulting RPM paths.
+6. runs `rpmbuild -ba` and prints the resulting RPM paths.
 
 Useful overrides:
 

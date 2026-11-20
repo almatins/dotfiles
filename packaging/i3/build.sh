@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 # Build the locally patched i3 RPM (no tab/stack strip, borders kept).
 #
+#   ./build.sh --deps          # first run: install BuildRequires too (sudo)
 #   ./build.sh                 # VERSION=4.25.1 DISTREL=1.fc44 TAB=2
 #   TAB=3 ./build.sh           # same source, newer local release
 #   DISTREL=1.fc43 ./build.sh  # different Fedora release
 #
-# Requires: rpm-build, rpmdevtools, curl, patch, and the i3 BuildRequires
-# (install them once with: sudo dnf builddep -y ~/rpmbuild/SPECS/i3.spec
-#  after the first run has placed the spec there).
+# Requires: rpm-build, rpmdevtools, curl, patch (sudo dnf install -y ...).
 #
 # The SRPM is re-installed with --replacepkgs on every run, so the spec and
 # sources are always fresh; the two local patches and the spec diff are applied
 # from this directory afterwards.
 set -euo pipefail
+
+WITH_DEPS=0
+[ "${1:-}" = "--deps" ] && WITH_DEPS=1
 
 VERSION="${VERSION:-4.25.1}"
 DISTREL="${DISTREL:-1.fc44}"
@@ -37,6 +39,11 @@ curl -fsSL -o "$work/SRPMS/$srpm" "$url"
 
 echo "==> installing SRPM into $work"
 rpm -i --replacepkgs "$work/SRPMS/$srpm"
+
+if [ "$WITH_DEPS" = 1 ]; then
+    echo "==> installing build dependencies (sudo)"
+    sudo dnf builddep -y "$work/SPECS/i3.spec"
+fi
 
 echo "==> applying local patches"
 cp "$here"/0002-hide-tab-strip.patch "$here"/0003-no-strip-keep-border.patch "$work/SOURCES/"

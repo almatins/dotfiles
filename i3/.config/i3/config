@@ -190,10 +190,10 @@ bindsym Mod4+v split v
 # re-tile the whole focused group without creating nested containers
 bindsym Mod4+Control+h layout splith
 bindsym Mod4+Control+v layout splitv
-bindsym Mod4+Control+Return split v; exec --no-startup-id ghostty
+bindsym Mod4+Control+Return split v; exec --no-startup-id alacritty
 
-# split vertically (horizontal divider) and open a new ghostty below
-bindsym Mod4+Shift+minus split v; exec --no-startup-id ghostty
+# split vertically (horizontal divider) and open a new alacritty below
+bindsym Mod4+Shift+minus split v; exec --no-startup-id alacritty
 
 # enter fullscreen mode for the focused container
 bindsym Mod4+f fullscreen toggle
@@ -272,7 +272,7 @@ exec --no-startup-id sh -c 'sleep 1; i3-msg workspace "0:misc"'
 assign [class="synergy"] "0:misc"
 
 # start an AI agent in its project dir; no argument opens a rofi picker
-bindsym Mod4+Shift+Return exec --no-startup-id ghostty -e "$HOME/.local/bin/ai"
+bindsym Mod4+Shift+Return exec --no-startup-id alacritty -e "$HOME/.local/bin/ai"
 
 # reload the configuration file
 bindsym Mod4+Shift+c reload
@@ -359,7 +359,7 @@ bindsym Mod4+Shift+f exec --no-startup-id thunar
 bindsym Mod4+Shift+b exec --no-startup-id xarchiver
 
 # help: open this keymap
-bindsym Mod4+Shift+h exec --no-startup-id ghostty -e less ~/i3-keymaps.md
+bindsym Mod4+Shift+h exec --no-startup-id alacritty -e less ~/i3-keymaps.md
 
 # screenshots: Print = interactive, Mod4+Print = silent region capture
 bindsym Print exec --no-startup-id flameshot gui

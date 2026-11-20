@@ -5,7 +5,7 @@
     monitor = 0
     follow = mouse
     width = 340
-    height = (300, 300)
+    height = (0, 300)
     origin = top-right
     offset = (12, 52)
     scale = 0
@@ -19,7 +19,7 @@
 
     transparency = 0
     frame_width = 2
-    frame_color = "#3C6EB4"
+    frame_color = "#cba6f7"
     gap_size = 6
     separator_color = frame
     corner_radius = 8
@@ -57,19 +57,19 @@
     mouse_right_click = close_all
 
 [urgency_low]
-    background = "#1A1A1A"
-    foreground = "#BDBDBD"
-    frame_color = "#4C4C4C"
+    background = "#181825"
+    foreground = "#a6adc8"
+    frame_color = "#45475a"
     timeout = 5
 
 [urgency_normal]
-    background = "#222222"
-    foreground = "#FFFFFF"
-    frame_color = "#3C6EB4"
+    background = "#1e1e2e"
+    foreground = "#cdd6f4"
+    frame_color = "#cba6f7"
     timeout = 10
 
 [urgency_critical]
-    background = "#2B1113"
-    foreground = "#FFFFFF"
-    frame_color = "#EF2929"
+    background = "#1e1e2e"
+    foreground = "#f38ba8"
+    frame_color = "#f38ba8"
     timeout = 0

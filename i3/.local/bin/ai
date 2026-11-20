@@ -1,24 +1,33 @@
 #!/usr/bin/env bash
-# ai [slug] [agent] — run an AI coding agent in a project directory.
+# ai [slug[:subpath]] [agent] — run an AI coding agent in a project directory.
 #
-#   ai            pick a project with rofi, then start the agent
-#   ai mar        start the agent in ~/project/marirally_project
-#   ai mar2 claude
+#   ai                              pick a project with rofi, agent in its root
+#   ai mar                          ~/project/marirally_project
+#   ai mar:apps/mari-rally-roadbook frontend app subdirectory of that repo
+#   ai mar2:apps/backend-api claude
 #
-# Sets the terminal title to "ai:<slug>" (OSC 2) so the Ghostty tab and the
-# i3 titlebar always show which project that agent is working on.
+# The title becomes "ai:<slug>" or "ai:<slug>:<subdir>" (OSC 2 for the terminal,
+# plus the tmux window name when running inside tmux), so the i3 titlebar and
+# the tmux window list show which project/role the agent belongs to.
 set -euo pipefail
 
 root="${PROJECTS:-$HOME/project}"
 agent_default="${AI_AGENT:-opencode}"
 
-slug="${1:-}"
-if [ -z "$slug" ]; then
-    slug=$(find "$root" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null |
+arg="${1:-}"
+if [ -z "$arg" ]; then
+    arg=$(find "$root" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null |
         sort |
         rofi -dmenu -p "Proyek" -i) || exit 0
-    [ -n "$slug" ] || exit 0
+    [ -n "$arg" ] || exit 0
 fi
+
+# split "slug[:subpath]"
+slug="${arg%%:*}"
+sub=""
+case "$arg" in
+    *:*) sub="${arg#*:}" ;;
+esac
 
 # short slugs used by the i3 workspace labels map to the real directory names
 case "$slug" in
@@ -26,12 +35,22 @@ case "$slug" in
     mar2) dir="$root/marirally" ;;
     *) dir="$root/$slug" ;;
 esac
+[ -n "$sub" ] && dir="$dir/$sub"
 
 if [ ! -d "$dir" ]; then
-    echo "ai: no such project directory: $dir" >&2
+    echo "ai: no such directory: $dir" >&2
     exit 1
 fi
 
+title="ai:$slug"
+[ -n "$sub" ] && title="$title:$(basename "$sub")"
+
 cd "$dir"
-printf '\033]2;ai:%s\007' "$slug"
+printf '\033]2;%s\007' "$title"
+
+# inside tmux, also give the window a stable, readable name
+if [ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ]; then
+    tmux rename-window -t "$TMUX_PANE" "${AI_WINDOW_NAME:-$title}" 2>/dev/null || true
+fi
+
 exec "${2:-$agent_default}"

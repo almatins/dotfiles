@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+# proj [slug] — create/attach the tmux session for a project.
+#
+#   proj            pick a project with rofi
+#   proj mar        session "mar" for ~/project/marirally_project
+#   proj -d mar     build the layout but do not attach (also used by tests)
+#
+# The window layout comes from ~/.config/tmux/projects/<slug>.conf, one line per
+# window:
+#
+#   name|subdir|command
+#
+#   - subdir is relative to the project root ("." = root)
+#   - command is optional and runs through `sh -c`, so pipes work
+#   - lines starting with # are ignored
+#   - log windows (name starting with "log" or ending in "-log") get
+#     monitor-activity off so constant output does not redden the tab
+#
+# Without a config file the session gets a plain "sh" window, an "ai" window
+# (the project picker/agent) and a compose-logs window when docker-compose.dev.yml
+# exists.
+set -euo pipefail
+
+detach=0
+if [ "${1:-}" = "-d" ]; then
+    detach=1
+    shift
+fi
+
+root="${PROJECTS:-$HOME/project}"
+slug="${1:-}"
+if [ -z "$slug" ]; then
+    slug=$(find "$root" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null |
+        sort |
+        rofi -dmenu -p "Proyek" -i) || exit 0
+    [ -n "$slug" ] || exit 0
+fi
+
+case "$slug" in
+    mar) dir="$root/marirally_project" ;;
+    mar2) dir="$root/marirally" ;;
+    *) dir="$root/$slug" ;;
+esac
+[ -d "$dir" ] || { echo "proj: no such project directory: $dir" >&2; exit 1; }
+
+if tmux has-session -t "$slug" 2>/dev/null; then
+    [ "$detach" = 1 ] && exit 0
+    exec tmux attach -t "$slug"
+fi
+
+conf="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/projects/$slug.conf"
+
+tmux new-session -d -s "$slug" -c "$dir" -n sh
+
+add_window() { # name subdir command...
+    local name=$1 subdir=$2
+    shift 2
+    local wdir
+    if [ "$subdir" = "." ] || [ -z "$subdir" ]; then
+        wdir="$dir"
+    else
+        wdir="$dir/$subdir"
+    fi
+    [ -d "$wdir" ] || return 0
+
+    local wid
+    if [ "$#" -gt 0 ]; then
+        wid=$(tmux new-window -P -F '#{window_id}' -t "$slug" -n "$name" -c "$wdir" "$@")
+    else
+        wid=$(tmux new-window -P -F '#{window_id}' -t "$slug" -n "$name" -c "$wdir")
+    fi
+
+    # keep the layout names stable (the commands would otherwise rename them)
+    tmux set-window-option -t "$wid" automatic-rename off
+    case "$name" in
+        log*|*-log) tmux set-window-option -t "$wid" monitor-activity off ;;
+    esac
+}
+
+if [ -f "$conf" ]; then
+    while IFS='|' read -r name subdir cmd; do
+        case "${name:-}" in ''|\#*) continue ;; esac
+        if [ -n "${cmd:-}" ]; then
+            add_window "$name" "$subdir" sh -c "$cmd"
+        else
+            add_window "$name" "$subdir"
+        fi
+    done <"$conf"
+else
+    add_window ai "." "$HOME/.local/bin/ai" "$slug"
+    if [ -f "$dir/docker-compose.dev.yml" ]; then
+        add_window logs "." sh -c "docker compose -f docker-compose.dev.yml logs -f --tail=100"
+    fi
+fi
+
+tmux select-window -t "$slug:ai-fe" 2>/dev/null || tmux select-window -t "$slug:1"
+
+[ "$detach" = 1 ] && exit 0
+exec tmux attach -t "$slug"

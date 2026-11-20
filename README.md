@@ -23,6 +23,8 @@ picom/.config/picom/picom.conf           ->  ~/.config/picom/picom.conf
 i3/.local/bin/power-menu.sh              ->  ~/.local/bin/power-menu.sh
 i3/.local/bin/ai                         ->  ~/.local/bin/ai
 i3/.local/bin/tmux-ws                    ->  ~/.local/bin/tmux-ws
+i3/.local/bin/proj                       ->  ~/.local/bin/proj
+tmux/.config/tmux/projects/              ->  ~/.config/tmux/projects
 ghostty/.config/ghostty/config           ->  ~/.config/ghostty/config
 i3status/.config/i3status/config         ->  ~/.config/i3status/config
 rofi/.config/rofi/config.rasi            ->  ~/.config/rofi/config.rasi

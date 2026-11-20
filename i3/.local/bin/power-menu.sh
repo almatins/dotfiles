@@ -6,27 +6,27 @@
 # Mod4+Shift+Escape sits right next to Mod4+Escape (lock) on the keyboard.
 set -uo pipefail
 
-LOCK="  Kunci layar"
-LOCK_OFF="  Kunci + matikan layar"
-SLEEP="  Tidur"
-LOGOUT="  Keluar sesi"
-REBOOT="  Nyalakan ulang"
-POWEROFF="  Matikan"
+LOCK="  Lock screen"
+LOCK_OFF="  Lock + screen off"
+SLEEP="  Sleep"
+LOGOUT="  Log out"
+REBOOT="  Reboot"
+POWEROFF="  Power off"
 
 menu() {  # $1 = prompt, $2 = window height in px (confirmation needs less)
     local prompt=$1 height=${2:-380}
-    rofi -dmenu -i -p "$prompt" -no-custom \
+    rofi -dmenu -i -p "$prompt" -no-custom -no-show-icons \
         -theme-str "window { width: 480px; height: ${height}px; } prompt { enabled: true; } entry { placeholder: \"\"; }"
 }
 
-confirm() {  # $1 = question; "Tidak" is preselected, so Enter alone is safe
+confirm() {  # $1 = question; "No" is preselected, so Enter alone is safe
     local answer
-    answer=$(printf 'Tidak\nYa\n' | menu "$1" 190) || return 1
-    [ "$answer" = "Ya" ]
+    answer=$(printf 'No\nYes\n' | menu "$1" 190) || return 1
+    [ "$answer" = "Yes" ]
 }
 
 choice=$(printf '%s\n' "$LOCK" "$LOCK_OFF" "$SLEEP" "$LOGOUT" "$REBOOT" "$POWEROFF" \
-    | menu "Menu daya") || exit 0
+    | menu "Power menu") || exit 0
 [ -z "${choice:-}" ] && exit 0
 
 case "$choice" in
@@ -44,12 +44,12 @@ case "$choice" in
         systemctl suspend
         ;;
     "$LOGOUT")
-        confirm "Keluar dari sesi ini?" && i3-msg exit
+        confirm "Log out of this session?" && i3-msg exit
         ;;
     "$REBOOT")
-        confirm "Nyalakan ulang komputer?" && systemctl reboot
+        confirm "Reboot the computer?" && systemctl reboot
         ;;
     "$POWEROFF")
-        confirm "Matikan komputer?" && systemctl poweroff
+        confirm "Power off the computer?" && systemctl poweroff
         ;;
 esac

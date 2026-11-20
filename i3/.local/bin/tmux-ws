@@ -1,0 +1,28 @@
+#!/bin/sh
+# tmux-ws — open/attach a tmux session named after the focused i3 workspace.
+#
+#   6:mar   -> session "mar",   ~/project/marirally_project when it exists
+#   7:mar2  -> session "mar2",  ~/project/marirally
+#   1:oc    -> session "oc",    $HOME
+#
+# The session is created on first use and attached afterwards (`tmux new -A`),
+# so the same key in the same workspace always lands you back in that session.
+set -eu
+
+ws=$(i3-msg -t get_workspaces 2>/dev/null |
+    jq -r '.[] | select(.focused) | .name' 2>/dev/null |
+    head -n1)
+
+# strip the "<number>:" prefix; fall back to "main"
+name=${ws#*:}
+[ -n "$name" ] || name=main
+
+# slugs used by the ai helper and the workspace labels
+case "$name" in
+    mar) dir="$HOME/project/marirally_project" ;;
+    mar2) dir="$HOME/project/marirally" ;;
+    *) dir="$HOME/project/$name" ;;
+esac
+[ -d "$dir" ] || dir="$HOME"
+
+exec tmux new -A -s "$name" -c "$dir"

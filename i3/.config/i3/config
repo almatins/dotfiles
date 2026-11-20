@@ -143,6 +143,9 @@ floating_modifier Mod4
 # start a terminal
 bindsym Mod4+Return exec --no-startup-id alacritty
 
+# open/attach the tmux session named after this workspace
+bindsym Mod4+t exec --no-startup-id alacritty -e "$HOME/.local/bin/tmux-ws"
+
 # kill focused window
 bindsym Mod4+Shift+q kill
 

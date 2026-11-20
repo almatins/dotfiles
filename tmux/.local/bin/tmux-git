@@ -1,0 +1,15 @@
+#!/bin/sh
+# tmux-git — print "<branch><*>" for a git work tree, nothing otherwise.
+#
+# Called from the tmux status line as:
+#   #(cd #{pane_current_path} && ~/.local/bin/tmux-git)
+# so it reflects the directory of the active pane. The "*" marks a dirty tree.
+cd "${1:-$PWD}" 2>/dev/null || exit 0
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
+
+b=$(git branch --show-current 2>/dev/null)
+[ -n "$b" ] || b=$(git rev-parse --short HEAD 2>/dev/null)
+[ -n "$b" ] || exit 0
+
+[ -n "$(git status --porcelain 2>/dev/null | head -n1)" ] && b="$b*"
+printf '%s' "$b"

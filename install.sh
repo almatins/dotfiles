@@ -26,6 +26,7 @@ link() {
 
 link "bash/.bashrc"         ".bashrc"
 link "tmux/.tmux.conf"      ".tmux.conf"
+link "tmux/.local/bin/tmux-git" ".local/bin/tmux-git"
 link "nvim/.config/nvim"    ".config/nvim"
 link "alacritty/.config/alacritty/alacritty.toml" ".config/alacritty/alacritty.toml"
 link "i3/.config/i3/config" ".config/i3/config"

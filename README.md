@@ -12,6 +12,7 @@ instead of `install.sh` with no changes to this repo.
 ```
 bash/.bashrc                             ->  ~/.bashrc
 tmux/.tmux.conf                          ->  ~/.tmux.conf
+tmux/.local/bin/tmux-git                 ->  ~/.local/bin/tmux-git
 nvim/.config/nvim/                       ->  ~/.config/nvim
 alacritty/.config/alacritty/alacritty.toml  ->  ~/.config/alacritty/alacritty.toml
 i3/.config/i3/config                     ->  ~/.config/i3/config

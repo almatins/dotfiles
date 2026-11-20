@@ -1,0 +1,16 @@
+--- a/src/render.c
++++ b/src/render.c
+@@ -146,6 +146,13 @@
+     /* find the height for the decorations */
+     params.deco_height = render_deco_height();
+ 
++    /* Local patch: no tab/stack strip. With deco_height 0,
++     * render_con_stacked()/render_con_tabbed() give the child the full rect,
++     * x_draw_decoration() skips (deco_rect.height == 0) and the container
++     * frame ends up unmapped. */
++    if (con->layout == L_STACKED || con->layout == L_TABBED)
++        params.deco_height = 0;
++
+     /* precalculate the sizes to be able to correct rounding errors */
+     params.sizes = precalculate_sizes(con, &params);
+ 

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# proj-ws [slug] — open the project's tmux workflow on its i3 workspace.
+#
+#   mar  -> 6:mar      mar2 -> 7:mar2      other -> current workspace
+#
+# Switches i3 to that workspace first, then starts alacritty running `proj`,
+# so the whole workflow window arrives already parked on the project workspace.
+set -euo pipefail
+
+root="${PROJECTS:-$HOME/project}"
+slug="${1:-}"
+if [ -z "$slug" ]; then
+    slug=$(find "$root" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null |
+        sort |
+        rofi -dmenu -p "Proyek" -i) || exit 0
+    [ -n "$slug" ] || exit 0
+fi
+
+case "$slug" in
+    mar) ws="6:mar" ;;
+    mar2) ws="7:mar2" ;;
+    *) ws="" ;;
+esac
+
+[ -n "$ws" ] && i3-msg "workspace $ws" >/dev/null 2>&1 || true
+
+exec alacritty -e "$HOME/.local/bin/proj" "$slug"

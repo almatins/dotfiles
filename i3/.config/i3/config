@@ -146,6 +146,9 @@ bindsym Mod4+Return exec --no-startup-id alacritty
 # open/attach the tmux session named after this workspace
 bindsym Mod4+t exec --no-startup-id alacritty -e "$HOME/.local/bin/tmux-ws"
 
+# open the full project workflow (proj layout) on its project workspace
+bindsym Mod4+Shift+t exec --no-startup-id "$HOME/.local/bin/proj-ws"
+
 # kill focused window
 bindsym Mod4+Shift+q kill
 

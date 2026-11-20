@@ -23,7 +23,7 @@ window {
     background-color: @bg;
     border: 2px;
     border-color: @accent;
-    border-radius: 10px;
+    border-radius: 0;
     padding: 12px;
 }
 
@@ -35,7 +35,7 @@ mainbox {
 inputbar {
     children: [ prompt, entry ];
     background-color: @bg-input;
-    border-radius: 10px;
+    border-radius: 0;
     padding: 8px 12px;
     spacing: 10px;
 }
@@ -62,7 +62,7 @@ listview {
 element {
     padding: 8px 12px;
     spacing: 12px;
-    border-radius: 10px;
+    border-radius: 0;
 }
 
 element-icon {
